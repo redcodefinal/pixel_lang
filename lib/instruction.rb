@@ -18,7 +18,7 @@ class Instruction
   end
 
   def run(piston)
-    self.class.run(piston, *args)
+    self.class.run(piston)
   end
 
   class << self
@@ -29,7 +29,7 @@ class Instruction
     end
 
     def match(color)
-      ((color.value & 0xf0000) >> 20)  == control_code
+      ((color.value & 0xf00000) >> 20)  == control_code
     end
 
     def run(piston, *args)

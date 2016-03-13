@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-#ruby-gemset=ninja_scanner
+#ruby-gemset=pixel_lang
 ruby '2.3.0'
 
 gem 'rmagick'

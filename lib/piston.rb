@@ -25,6 +25,11 @@ class Piston
 
   # clockwise list of instructions
   DIRECTIONS = [:up, :right, :down, :left]
+  REGISTERS = [:ma, :mav, :mb, :mbv, :sa, :sv, :i, :o]
+  REGULAR_REG = REGISTERS[0..5]
+  SPECIAL_REG = REGISTERS[6..7]
+  INPUT_OPTIONS = [:int, :char]
+  OUTPUT_OPTIONS =  [:int, :char, :int_hex, :char_hex]
 
   def initialize(parent, position_x, position_y, direction)
     @parent = parent
@@ -44,16 +49,91 @@ class Piston
     reset
   end
 
-  def mav
+  alias_method :set_ma, :ma=
+  alias_method :set_mb, :mb=
+  alias_method :set_sa, :sa=
+
+  def mav(*options)
     memory[ma]
   end
 
-  def mbv
+  def set_mav(v, *options)
+    memory[ma] = v
+  end
+
+  def mbv(*options)
     memory[mb]
   end
 
-  def sv
+  def set_mbv(v, *options)
+    memory[mb] = v
+  end
+
+  def sv(*options)
     parent.memory[sa]
+  end
+
+  def set_sv(v, *options)
+    parent.memory[sa] = v
+  end
+
+  def i(*options)
+    code = INPUT_OPTIONS[options.first]
+    #if we put a number on the stack
+    if @i
+      i = @i
+      @i = nil
+
+      case code
+        when :int
+          i
+        when :char
+          i %= 0x100
+      end
+      return i
+    end
+
+    case code
+      when :int
+        parent.grab_input_number
+      when :char
+        parent.grab_input_char
+      else
+        fail :input_mode_error
+    end
+  end
+
+  def set_i(v, *options)
+    @i = v
+  end
+
+  def o(*options)
+    code = INPUT_OPTIONS[options.first]
+    case code
+      when :int
+        @o
+      when :char
+        @o % 0x100
+      else
+        fail :output_mode_error
+    end
+  end
+
+  def set_o(v, *options)
+    code = OUTPUT_OPTIONS[options.first]
+    @o = v
+    case code
+      when :int
+        parent.write_output @o
+      when :char
+        parent.write_output((@o % 0x100).chr)
+      when :int_hex
+        parent.write_output "0x#{@o.to_s(16).rjust(5, ?0)}"
+      when :char_hex
+        parent.write_output "0x#{(@o%0x100).to_s(16).rjust(2, ?0)}"
+      else
+        fail :output_mode_error
+    end
   end
 
   # resets memory
@@ -79,10 +159,17 @@ class Piston
     end
 
     instruction = parent.instructions.get_instruction(position_x, position_y)
-    parent.log.info "T#{id} C:#{parent.cycles} Running #{instruction.class} @ #{position_x}, #{position_y} CV: #{instruction.color_value.to_s 16}"
-    instruction.run(self, instruction.color_value)
+    parent.log.info "T#{id} C:#{parent.cycles} Running #{instruction.class} @ #{position_x}, #{position_y} CV: #{instruction.cv.to_s 16}"
+    instruction.run(self)
     parent.log.debug '^  Piston state:'
     parent.log.debug "^     d:#{direction}"
+    parent.log.debug "^     ma:#{ma}"
+    parent.log.debug "^     mav:#{mav}"
+    parent.log.debug "^     mb:#{mb}"
+    parent.log.debug "^     mbv:#{mbv}"
+    parent.log.debug "^     sa:#{sa}"
+    parent.log.debug "^     sv:#{sv}"
+    parent.log.debug "^     i:#{@i}"
     parent.log.debug '^  Machine state:'
     parent.log.debug "^     static: #{parent.memory}"
     parent.log.debug "^     output: #{parent.output}"

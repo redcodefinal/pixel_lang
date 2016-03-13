@@ -1,6 +1,9 @@
 require_relative './instruction'
 require_relative './piston'
 require_relative './instructions'
+require_relative './color'
+require_relative './basic'
+require_relative './memory'
 
 require 'rmagick'
 require 'logger'
@@ -43,15 +46,15 @@ class Engine
     @pistons = []
     @id = 0
     @memory = {}
-    @memory.default = Color::WHITE
+    @memory.default = Color::BLACK
     @input = @original_input
 
-    @log = Logger.new(File.new(File.dirname(__FILE__) + '/log/' + name + '.log', 'w'))
+    @log = Logger.new(File.new(File.dirname(__FILE__) + '/../log/' + name + '.log', 'w'))
     log.info "#{name} has reset! Runs: #{runs}"
     log.level = Logger::WARN
 
     @instructions.start_points.each do |sp|
-      @pistons << Piston.new(self, sp.x, sp.y, sp.p.class.direction)
+      @pistons << Piston.new(self, sp.x, sp.y, sp.p.direction)
     end
     @runs += 1
   end
@@ -64,7 +67,7 @@ class Engine
   # runs a single instruction on all pistons
   def run_one_instruction
     # don't run if the machine has already ended.
-    return if pistons.empty? and @to_merge.empty?
+    return if ended?
     # run an instruction on all pistons.
     pistons.each(&:run_one_instruction)
     # merge pistons
@@ -82,12 +85,12 @@ class Engine
     @to_merge.clear
 
     # prune old pistons, delete the ones that no longer are active
-    @pistons.select! { |t| !t.ended }
+    @pistons.select! { |t| not t.ended? }
     @cycles += 1
   end
 
   # forks a piston in a specific direction
-  def fork_piston(piston, turn_direction)
+  def fork(piston, turn_direction)
     new_piston = piston.clone
 
     if turn_direction == :left
@@ -103,14 +106,12 @@ class Engine
 
   # writes to the output
   def write_output(string)
-    @output << string
+    @output << string.to_s
   end
 
   # gets a number from input until it hits the end or a non-number char
   def grab_input_number
-    string = ''
-    string << @input.slice!(0) while input.length != 0 and ('0'..'9').include?(input[0])
-    string.to_i
+    ('' << @input.slice!(0) while input.length != 0 and ('0'..'9').include?(input[0])).to_i
   end
 
   # gets the next input char
@@ -123,5 +124,9 @@ class Engine
     new_id = @id
     @id += 1
     new_id
+  end
+
+  def ended?
+    pistons.empty? and @to_merge.empty?
   end
 end

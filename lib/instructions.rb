@@ -1,3 +1,4 @@
+require_relative './color'
 # Holds all the instructions and performs pattern checking on them.
 # Instruction class subscribes itself to Instructions upon instancing.
 # This is done at class level.
@@ -18,12 +19,12 @@ class Instructions
     def get_instruction(color)
       instructions.each do |i|
         # check the pattern to the instructions pattern
-        if i.cmatch(color)
+        if i.match(color)
           return i
         end
       end
       # the pattern was not recognized so we throw an error.
-      fail :pixel_parse_error
+      fail
     end
 
     # clears the instructions array
@@ -48,7 +49,7 @@ class Instructions
     image = ImageList.new(File.absolute_path(image_file))
 
     # create array
-    @colors = Array.new(instructions_x, Array.new(instructions_y, 0))
+    @array = Array.new(image.columns, Array.new(image.rows, 0))
 
     # fill patterns
     image.columns.times do |x|
@@ -59,31 +60,15 @@ class Instructions
         color.r = c.red / 0x100
         color.g = c.green / 0x100
         color.b = c.blue / 0x100
-        @colors[x][y] = color.clone
-
+        @array[x][y] = Instructions.get_instruction(color).new color
       end
     end
-
-
-    # map to actual instructions
-    @array = @colors.map do |y_a|
-      y_a.map do |color|
-        begin
-          i = Instructions.get_instruction(color)
-        rescue :pixel_parse_error # if the pattern was not found in the instructions
-          puts("#{y_a.index(color)}, #{@colors.index(y_a)} had a nil instruction. Shutting down!")
-          fail
-        end
-        i
-      end
-    end
-
 
     # find start points and list them so the machine can start program
     @start_points = []
     point_struct = Struct.new(:p, :x, :y)
     @array.each_with_index do |x_a, x|
-      y_a.each_with_index do |int, y|
+      x_a.each_with_index do |int, y|
         if int.class.to_s.to_sym == :Start
           @start_points << point_struct.new(int, x, y)
         end
