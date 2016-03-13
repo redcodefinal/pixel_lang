@@ -99,7 +99,7 @@ class Piston
       when :char
         parent.grab_input_char
       else
-        fail :input_mode_error
+        fail
     end
   end
 
@@ -115,13 +115,13 @@ class Piston
       when :char
         @o % 0x100
       else
-        fail :output_mode_error
+        fail
     end
   end
 
   def set_o(v, *options)
     code = OUTPUT_OPTIONS[options.first]
-    @o = v
+    @o = Color.new(v)
     case code
       when :int
         parent.write_output @o
@@ -132,7 +132,7 @@ class Piston
       when :char_hex
         parent.write_output "0x#{(@o%0x100).to_s(16).rjust(2, ?0)}"
       else
-        fail :output_mode_error
+        fail
     end
   end
 
@@ -159,6 +159,7 @@ class Piston
     end
 
     instruction = parent.instructions.get_instruction(position_x, position_y)
+    fail unless instruction
     parent.log.info "T#{id} C:#{parent.cycles} Running #{instruction.class} @ #{position_x}, #{position_y} CV: #{instruction.cv.to_s 16}"
     instruction.run(self)
     parent.log.debug '^  Piston state:'
@@ -180,8 +181,8 @@ class Piston
   end
 
   # change the direction
-  def change_direction(index)
-    @direction = DIRECTIONS[index%4]
+  def change_direction(d)
+    @direction = d
   end
 
   # turns the piston left

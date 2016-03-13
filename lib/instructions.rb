@@ -49,7 +49,7 @@ class Instructions
     image = ImageList.new(File.absolute_path(image_file))
 
     # create array
-    @array = Array.new(image.columns, Array.new(image.rows, 0))
+    @array = Array.new(image.columns) { Array.new(image.rows) }
 
     # fill patterns
     image.columns.times do |x|

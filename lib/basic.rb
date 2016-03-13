@@ -1,13 +1,17 @@
 require_relative './instruction'
 require_relative './piston'
 
+class Blank < Instruction
+  set_cc 0
+end
+
 class Start < Instruction
   attr_reader :direction, :priority
 
   set_cc 1
   def initialize(color)
     super color
-    @direction = (cv & 0xf0000) >> 16
+    @direction = Piston::DIRECTIONS[(cv & 0xf0000) >> 16]
     @priority = (cv & 0x0ffff)
   end
 
@@ -23,7 +27,7 @@ end
 class Pause < Instruction
   attr_reader :cycles
 
-  set_cc 1
+  set_cc 2
 
   def initialize(color)
     super color
@@ -43,11 +47,11 @@ end
 class Direction < Instruction
   attr_reader :direction
 
-  set_cc 2
+  set_cc 3
 
   def initialize(color)
     super color
-    @direction = (cv & 0xf0000) >> 16
+    @direction = Piston::DIRECTIONS[(cv & 0xf0000) >> 16]
   end
 
   def run(piston)
@@ -63,7 +67,7 @@ class Fork < Instruction
   TYPES = [:urd, :dlr, :uld, :ulr]
   attr_reader :type
 
-  set_cc 3
+  set_cc 4
 
   def initialize(color)
     super color
@@ -141,7 +145,7 @@ end
 class Jump < Instruction
   attr_reader :spaces
 
-  set_cc 4
+  set_cc 5
 
   def initialize(color)
     super color
@@ -160,7 +164,7 @@ end
 class Call < Instruction
   attr_reader :x, :y
 
-  set_cc 5
+  set_cc 6
 
   def initialize(color)
     super color
@@ -187,7 +191,7 @@ class Conditional < Instruction
   ORIENTATIONS = [:vertical, :horizontal]
   attr_reader :orientation, :s1, :s1o, :op, :s2, :s2o
 
-  set_cc 6
+  set_cc 7
 
   def initialize(color)
     super color
@@ -236,7 +240,7 @@ class Conditional < Instruction
 end
 
 class Insert < Instruction
-  set_cc 7
+  set_cc 8
 
   def run(piston)
     self.class.run(piston, cv)
@@ -250,7 +254,7 @@ end
 class Move < Instruction
   attr_reader :s, :sop, :d, :dop
 
-  set_cc 8
+  set_cc 9
 
   def initialize(color)
     super(color)
@@ -297,7 +301,7 @@ class Arithmetic < Instruction
 
   attr_reader :s1, :s1o, :op, :s2, :s2o, :d, :dop
 
-  set_cc 9
+  set_cc 10
 
   def initialize(color)
     super(color)
@@ -337,15 +341,22 @@ class Arithmetic < Instruction
   end
 end
 
+class OutputCV < Instruction
+  set_cc 11
+
+  def run(piston)
+    self.class.run(piston, cv)
+  end
+
+  def self.run(piston, *args)
+    piston.parent.write_output args[0].chr
+  end
+end
+
 class End < Instruction
-  set_cc 10
+  set_cc 15
 
   def self.run(piston, *args)
     piston.kill
   end
-end
-
-#MUST HAPPEN LAST!
-class Blank < Instruction
-  set_cc 0
 end

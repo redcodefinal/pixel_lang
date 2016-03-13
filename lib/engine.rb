@@ -51,7 +51,7 @@ class Engine
 
     @log = Logger.new(File.new(File.dirname(__FILE__) + '/../log/' + name + '.log', 'w'))
     log.info "#{name} has reset! Runs: #{runs}"
-    log.level = Logger::WARN
+    log.level = Logger::DEBUG
 
     @instructions.start_points.each do |sp|
       @pistons << Piston.new(self, sp.x, sp.y, sp.p.direction)
@@ -111,12 +111,20 @@ class Engine
 
   # gets a number from input until it hits the end or a non-number char
   def grab_input_number
-    ('' << @input.slice!(0) while input.length != 0 and ('0'..'9').include?(input[0])).to_i
+    i = ''
+    while input.length != 0 and ('0'..'9').include?(input[0])
+      i << '' << @input.slice!(0)
+    end
+    i.to_i
   end
 
   # gets the next input char
   def grab_input_char
-    @input.slice!(0).ord unless input.length == 0
+    if input.length != 0
+      @input.slice!(0).ord
+    else
+      0
+    end
   end
 
   # gets an id number for the Piston
