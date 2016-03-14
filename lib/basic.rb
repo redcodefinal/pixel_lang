@@ -5,6 +5,7 @@ class Start < Instruction
   attr_reader :direction, :priority
 
   set_cc 1
+
   def initialize(color)
     super color
     @direction = Piston::DIRECTIONS[(cv & 0xf0000) >> 16]
@@ -272,13 +273,21 @@ class Move < Instruction
     dop = args[3]
 
     #decode swap and reverse options
-    # o = sop^dop
-    # swap = ((o>>1) != 0)
-    # reverse = ((o&1) != 0)
-    #
-    # s, d = d, s if reverse
+    if Piston::REGULAR_REG.include?(s) and Piston::REGULAR_REG.include?(d)
+      o = sop^dop
+      swap = ((o>>1) != LOGICAL_FALSE)
+      reverse = ((o&1) != LOGICAL_FALSE)
+    elsif Piston::REGULAR_REG.include?(s)
+      swap = ((sop>>1) != 0)
+      reverse = ((sop&1) != LOGICAL_FALSE)
+    elsif Piston::REGULAR_REG.include?(d)
+      swap = ((dop>>1) != 0)
+      reverse = ((dop&1) != LOGICAL_FALSE)
+    end
 
-    if false
+    s, d = d, s if reverse
+
+    if swap
       cs = piston.send(s, sop)
       cd = piston.send(d, dop)
       piston.send("set_#{s.to_s}", cd, sop)
@@ -300,8 +309,6 @@ class Arithmetic < Instruction
   def initialize(color)
     super(color)
 
-
-
     @s1 = Piston::REGISTERS[cv>>17]
     @s1o = (cv&0x18000)>>15
     @op = Arithmetic::OPERATIONS[(cv&0x7800)>>11]
@@ -309,9 +316,6 @@ class Arithmetic < Instruction
     @s2o = (cv&0xc0)>>6
     @d = Piston::REGISTERS[(cv&0x38)>>3]
     @dop = (cv&0x6)>>1
-
-    puts
-
   end
 
   def run(piston)

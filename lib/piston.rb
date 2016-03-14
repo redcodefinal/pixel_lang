@@ -1,5 +1,3 @@
-require_relative './memory'
-
 # Single piston for an instruction reader and executor.
 class Piston
   # parent of the piston, should be a machine
@@ -18,9 +16,6 @@ class Piston
   attr_reader :ended
   # the identity of the piston, given by the parent machine
   attr_reader :id
-
-  #registers
-  attr_accessor :ma, :mb, :sa
 
 
   # clockwise list of instructions
@@ -49,24 +44,44 @@ class Piston
     reset
   end
 
-  alias_method :set_ma, :ma=
-  alias_method :set_mb, :mb=
-  alias_method :set_sa, :sa=
+  def ma(*options)
+    @ma
+  end
+
+  def set_ma(v, *options)
+    @ma = v
+  end
 
   def mav(*options)
-    memory[ma]
+    @memory[ma]
   end
 
   def set_mav(v, *options)
-    memory[ma] = v
+    @memory[ma] = v
+  end
+
+  def mb(*options)
+    @mb
+  end
+
+  def set_mb(v, *options)
+    @mb = v
   end
 
   def mbv(*options)
-    memory[mb]
+    @memory[mb]
   end
 
   def set_mbv(v, *options)
-    memory[mb] = v
+    @memory[mb] = v
+  end
+
+  def sa(*options)
+    @sa
+  end
+
+  def set_sa(v, *options)
+    @sa = v
   end
 
   def sv(*options)
@@ -164,13 +179,13 @@ class Piston
     instruction.run(self)
     parent.log.debug '^  Piston state:'
     parent.log.debug "^     d:#{direction}"
-    parent.log.debug "^     ma:#{ma}"
-    parent.log.debug "^     mav:#{mav}"
-    parent.log.debug "^     mb:#{mb}"
-    parent.log.debug "^     mbv:#{mbv}"
-    parent.log.debug "^     sa:#{sa}"
-    parent.log.debug "^     sv:#{sv}"
-    parent.log.debug "^     i:#{@i}"
+    parent.log.debug "^     ma:#{ma.to_s 16}"
+    parent.log.debug "^     mav:#{mav.to_s 16}"
+    parent.log.debug "^     mb:#{mb.to_s 16}"
+    parent.log.debug "^     mbv:#{mbv.to_s 16}"
+    parent.log.debug "^     sa:#{sa.to_s 16}"
+    parent.log.debug "^     sv:#{sv.to_s 16}"
+    parent.log.debug "^     i:#{@i.ord.to_s 16}" if @i
     parent.log.debug '^  Machine state:'
     parent.log.debug "^     static: #{parent.memory}"
     parent.log.debug "^     output: #{parent.output}"

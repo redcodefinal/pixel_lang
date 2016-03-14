@@ -3,7 +3,6 @@ require_relative './piston'
 require_relative './instructions'
 require_relative './color'
 require_relative './basic'
-require_relative './memory'
 
 require 'rmagick'
 require 'logger'
