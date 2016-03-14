@@ -46,7 +46,7 @@ class Engine
     @pistons = []
     @id = 0
     @memory = {}
-    @memory.default = Color::BLACK
+    @memory.default = 0
     @input = @original_input
 
     @log = Logger.new(File.new(File.dirname(__FILE__) + '/../log/' + name + '.log', 'w'))
@@ -120,11 +120,7 @@ class Engine
 
   # gets the next input char
   def grab_input_char
-    if input.length != 0
-      @input.slice!(0).ord
-    else
-      0
-    end
+    (@input.length == 0) ? 0 : @input.slice!(0).ord
   end
 
   # gets an id number for the Piston

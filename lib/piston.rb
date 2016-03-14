@@ -42,9 +42,9 @@ class Piston
     @ended = false
     @id = parent.make_id
 
-    @ma = Color::BLACK
-    @mb = Color::BLACK
-    @sa = Color::BLACK
+    @ma = 0
+    @mb = 0
+    @sa = 0
 
     reset
   end
@@ -121,7 +121,7 @@ class Piston
 
   def set_o(v, *options)
     code = OUTPUT_OPTIONS[options.first]
-    @o = Color.new(v)
+    @o = v
     case code
       when :int
         parent.write_output @o
@@ -139,7 +139,7 @@ class Piston
   # resets memory
   def reset
     @memory = {}
-    memory.default = Color::BLACK
+    memory.default = 0
   end
 
   def clone

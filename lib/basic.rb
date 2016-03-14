@@ -1,10 +1,6 @@
 require_relative './instruction'
 require_relative './piston'
 
-class Blank < Instruction
-  set_cc 0
-end
-
 class Start < Instruction
   attr_reader :direction, :priority
 
@@ -231,7 +227,7 @@ class Conditional < Instruction
 
     result = v1.send(op, v2)
 
-    if result == 0
+    if result == 0 || !result
       piston.change_direction directions[0]
     else
       piston.change_direction directions[1]
@@ -263,8 +259,6 @@ class Move < Instruction
     @sop = (cv&0x18000)>>15
     @d = Piston::REGISTERS[(cv&0x7000)>>12]
     @dop = (cv&0xc00) >> 10
-
-    puts
   end
 
   def run(piston)
@@ -278,13 +272,13 @@ class Move < Instruction
     dop = args[3]
 
     #decode swap and reverse options
-    o = sop^dop
-    swap = ((o>>1) != 0)
-    reverse = ((o&1) != 0)
+    # o = sop^dop
+    # swap = ((o>>1) != 0)
+    # reverse = ((o&1) != 0)
+    #
+    # s, d = d, s if reverse
 
-    s, d = d, s if reverse
-
-    if swap
+    if false
       cs = piston.send(s, sop)
       cd = piston.send(d, dop)
       piston.send("set_#{s.to_s}", cd, sop)
@@ -301,7 +295,7 @@ class Arithmetic < Instruction
 
   attr_reader :s1, :s1o, :op, :s2, :s2o, :d, :dop
 
-  set_cc 10
+  set_cc 0xA
 
   def initialize(color)
     super(color)
@@ -342,7 +336,7 @@ class Arithmetic < Instruction
 end
 
 class OutputCV < Instruction
-  set_cc 11
+  set_cc 0xB
 
   def run(piston)
     self.class.run(piston, cv)
@@ -354,9 +348,13 @@ class OutputCV < Instruction
 end
 
 class End < Instruction
-  set_cc 15
+  set_cc 0
 
   def self.run(piston, *args)
     piston.kill
   end
+end
+
+class Blank < Instruction
+  set_cc 0xf
 end

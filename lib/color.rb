@@ -62,7 +62,7 @@ class Color
   end
 
   def ==(other)
-    value == other.value
+    value == other.to_i
   end
 end
 

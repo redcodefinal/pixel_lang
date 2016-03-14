@@ -63,5 +63,6 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="jdk" jdkName="RVM: ruby-2.3.0 [pixel_lang]" jdkType="RUBY_SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="rmagick (v2.15.4, RVM: ruby-2.3.0 [pixel_lang]) [gem]" level="application" />
   </component>
 </module>
