@@ -23,6 +23,11 @@ class Instruction
 
   class << self
     attr_reader :control_code
+    attr_reader :char
+
+    def set_char(c)
+      @char = c
+    end
 
     def set_cc(cc)
       @control_code = cc

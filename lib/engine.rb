@@ -114,7 +114,7 @@ class Engine
     while input.length != 0 and ('0'..'9').include?(input[0])
       i << '' << @input.slice!(0)
     end
-    i.to_i
+    i.to_i % Piston::MAX_INTEGER
   end
 
   # gets the next input char

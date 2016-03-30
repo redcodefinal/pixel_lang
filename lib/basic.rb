@@ -1,14 +1,23 @@
 require_relative './instruction'
 require_relative './piston'
 
+class End < Instruction
+  set_cc 0
+
+  def self.run(piston, *args)
+    piston.kill
+  end
+end
+
 class Start < Instruction
   attr_reader :direction, :priority
 
   set_cc 1
+  set_char ?S
 
   def initialize(color)
     super color
-    @direction = Piston::DIRECTIONS[(cv & 0xf0000) >> 16]
+    @direction = Piston::DIRECTIONS[((cv & 0xf0000) >> 16) % Piston::DIRECTIONS.count]
     @priority = (cv & 0x0ffff)
   end
 
@@ -25,6 +34,7 @@ class Pause < Instruction
   attr_reader :cycles
 
   set_cc 2
+  set_char ?P
 
   def initialize(color)
     super color
@@ -45,6 +55,7 @@ class Direction < Instruction
   attr_reader :direction
 
   set_cc 3
+  set_char ?D
 
   def initialize(color)
     super color
@@ -65,6 +76,7 @@ class Fork < Instruction
   attr_reader :type
 
   set_cc 4
+  set_char ?F
 
   def initialize(color)
     super color
@@ -134,7 +146,7 @@ class Fork < Instruction
             raise Exception.new
         end
       else
-        fail :fork_pipe_type_error
+        fail "FORK TYPE ERROR"
     end
   end
 end
@@ -143,6 +155,7 @@ class Jump < Instruction
   attr_reader :spaces
 
   set_cc 5
+  set_char ?J
 
   def initialize(color)
     super color
@@ -162,6 +175,7 @@ class Call < Instruction
   attr_reader :x, :y
 
   set_cc 6
+  set_char ?L
 
   def initialize(color)
     super color
@@ -189,16 +203,18 @@ class Conditional < Instruction
   attr_reader :orientation, :s1, :s1o, :op, :s2, :s2o
 
   set_cc 7
+  set_char ?C
+
 
   def initialize(color)
     super color
 
     @orientation = ORIENTATIONS[cv>>19]
     @s1 = Piston::REGISTERS[((cv&0x70000)>>16)]
-    @s1o = (cv & 0xf000) >> 12
-    @op = Arithmetic::OPERATIONS[((cv&0xf00)>>8)]
-    @s2 = Piston::REGISTERS[((cv&0xe0)>>5)]
-    @s2o = (cv & 0x13) >> 1
+    @s1o = (cv & 0xc000) >> 14
+    @op = Arithmetic::OPERATIONS[((cv&0x3c00)>>10)]
+    @s2 = Piston::REGISTERS[((cv&0x380)>>8)]
+    @s2o = (cv & 0x60) >> 6
   end
 
   def run(piston)
@@ -220,7 +236,7 @@ class Conditional < Instruction
       when :horizontal
         directions = [:left, :right]
       else
-        fail :conditional_orientation_error
+        fail "CONDITIONAL_ORIENTATION_ERROR"
     end
 
     v1 = piston.send(s1, s1o)
@@ -238,6 +254,7 @@ end
 
 class Insert < Instruction
   set_cc 8
+  set_char ?I
 
   def run(piston)
     self.class.run(piston, cv)
@@ -252,6 +269,7 @@ class Move < Instruction
   attr_reader :s, :sop, :d, :dop
 
   set_cc 9
+  set_char ?M
 
   def initialize(color)
     super(color)
@@ -305,6 +323,7 @@ class Arithmetic < Instruction
   attr_reader :s1, :s1o, :op, :s2, :s2o, :d, :dop
 
   set_cc 0xA
+  set_char ?A
 
   def initialize(color)
     super(color)
@@ -339,26 +358,33 @@ class Arithmetic < Instruction
   end
 end
 
-class OutputCV < Instruction
+class OutputValueAsChar < Instruction
   set_cc 0xB
+  set_char ?O
 
   def run(piston)
     self.class.run(piston, cv)
   end
 
   def self.run(piston, *args)
-    piston.parent.write_output args[0].chr
+    piston.parent.write_output (args[0]%256).chr
   end
 end
 
-class End < Instruction
-  set_cc 0
+class OutputValue <Instruction
+  set_cc 0xC
+  set_char ?O
+
+  def run(piston)
+    self.class.run(piston, cv)
+  end
 
   def self.run(piston, *args)
-    piston.kill
+    piston.parent.write_output args[0]
   end
 end
 
 class Blank < Instruction
   set_cc 0xf
+  set_char ?B
 end

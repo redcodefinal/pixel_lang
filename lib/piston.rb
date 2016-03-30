@@ -25,6 +25,7 @@ class Piston
   SPECIAL_REG = REGISTERS[6..7]
   INPUT_OPTIONS = [:int, :char]
   OUTPUT_OPTIONS =  [:int, :char, :int_hex, :char_hex]
+  MAX_INTEGER = 0xfffff
 
   def initialize(parent, position_x, position_y, direction)
     @parent = parent
@@ -49,7 +50,7 @@ class Piston
   end
 
   def set_ma(v, *options)
-    @ma = v
+    @ma = v % MAX_INTEGER
   end
 
   def mav(*options)
@@ -57,7 +58,7 @@ class Piston
   end
 
   def set_mav(v, *options)
-    @memory[ma] = v
+    @memory[ma] = v % MAX_INTEGER
   end
 
   def mb(*options)
@@ -65,7 +66,7 @@ class Piston
   end
 
   def set_mb(v, *options)
-    @mb = v
+    @mb = v % MAX_INTEGER
   end
 
   def mbv(*options)
@@ -73,7 +74,7 @@ class Piston
   end
 
   def set_mbv(v, *options)
-    @memory[mb] = v
+    @memory[mb] = v % MAX_INTEGER
   end
 
   def sa(*options)
@@ -81,7 +82,7 @@ class Piston
   end
 
   def set_sa(v, *options)
-    @sa = v
+    @sa = v % MAX_INTEGER
   end
 
   def sv(*options)
@@ -89,7 +90,7 @@ class Piston
   end
 
   def set_sv(v, *options)
-    parent.memory[sa] = v
+    parent.memory[sa] = v % MAX_INTEGER
   end
 
   def i(*options)
@@ -119,6 +120,7 @@ class Piston
   end
 
   def set_i(v, *options)
+    parent.input.unshift @i if @i
     @i = v
   end
 
