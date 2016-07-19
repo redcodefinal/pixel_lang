@@ -3,7 +3,7 @@ require_relative './piston'
 
 class End < Instruction
   set_cc 0
-
+  set_char ?E
   def self.run(piston, *args)
     piston.kill
   end
