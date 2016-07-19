@@ -1,7 +1,18 @@
 require_relative './instruction'
 require_relative './piston'
 
-class End < Instruction
+# Instruction Composition
+# 0bCCCCVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+# C = Control Code (Instruction) [4 bits]
+# V = Value (Arguments) [28 bits]
+
+# End Instruction
+# Code: 0
+# Value: NOP (Value has no operation)
+# Instruction Composition
+# 0bCCCC0000000000000000000000000000
+# C = Control Code (Instruction) [4 bits]
+# 0 = Free bit [28 bits]
   set_cc 0
   set_char ?E
   def self.run(piston, *args)
@@ -9,6 +20,15 @@ class End < Instruction
   end
 end
 
+# Start Instruction
+# Code: 1
+# Value: Priority
+# Priority: Order in which threads should run their cycles. 0 goes first.
+# Instruction Composition
+# 0bCCCCDDPPPPPPPPPPPPPPPPPPPPPPPPP
+# C = Control Code (Instruction) [4 bits]
+# D = Direction [2 bits]
+# P = Priority [26 bits]
 class Start < Instruction
   attr_reader :direction, :priority
 
@@ -30,6 +50,14 @@ class Start < Instruction
   end
 end
 
+# Start Pause
+# Code: 2
+# Value: Priority
+# Priority: Order in which threads should run their cycles. 0 goes first.
+# Instruction Composition
+# 0bCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+# C = Control Code (Instruction) [4 bits]
+# T = Time (Cycles to wait) [28 bits]
 class Pause < Instruction
   attr_reader :cycles
 
@@ -51,6 +79,15 @@ class Pause < Instruction
   end
 end
 
+# Start Direction
+# Code: 1
+# Value: Priority
+# Priority: Order in which threads should run their cycles. 0 goes first.
+# Instruction Composition
+# 0bCCCCDD00000000000000000000000000
+# C = Control Code (Instruction) [4 bits]
+# D = Direction [2 bits] (See Pistion::DIRECTIONS for order)
+# 0 = Free bit
 class Direction < Instruction
   attr_reader :direction
 
