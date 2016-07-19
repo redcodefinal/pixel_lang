@@ -7,12 +7,10 @@ require_relative './piston'
 # V = Value (Arguments) [28 bits]
 
 # End Instruction
-# Code: 0
-# Value: NOP (Value has no operation)
-# Instruction Composition
-# 0bCCCC0000000000000000000000000000
+#
+# 0bCCCC00000000000000000000
 # C = Control Code (Instruction) [4 bits]
-# 0 = Free bit [28 bits]
+# 0 = Free bit [20 bits]
   set_cc 0
   set_char ?E
   def self.run(piston, *args)
@@ -21,14 +19,11 @@ require_relative './piston'
 end
 
 # Start Instruction
-# Code: 1
-# Value: Priority
-# Priority: Order in which threads should run their cycles. 0 goes first.
-# Instruction Composition
-# 0bCCCCDDPPPPPPPPPPPPPPPPPPPPPPPPP
+# 
+# 0bCCCCDDPPPPPPPPPPPPPPPPP
 # C = Control Code (Instruction) [4 bits]
 # D = Direction [2 bits]
-# P = Priority [26 bits]
+# P = Priority [18 bits] Order in which threads should run their cycles. 0 goes first.
 class Start < Instruction
   attr_reader :direction, :priority
 
@@ -50,14 +45,11 @@ class Start < Instruction
   end
 end
 
-# Start Pause
-# Code: 2
-# Value: Priority
-# Priority: Order in which threads should run their cycles. 0 goes first.
-# Instruction Composition
-# 0bCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+# Pause Instruction
+#  
+# 0bCCCCTTTTTTTTTTTTTTTTTTTT
 # C = Control Code (Instruction) [4 bits]
-# T = Time (Cycles to wait) [28 bits]
+# T = Time (Cycles to wait) [20 bits]
 class Pause < Instruction
   attr_reader :cycles
 
@@ -79,15 +71,12 @@ class Pause < Instruction
   end
 end
 
-# Start Direction
-# Code: 1
-# Value: Priority
-# Priority: Order in which threads should run their cycles. 0 goes first.
+# Direction Instruction
 # Instruction Composition
-# 0bCCCCDD00000000000000000000000000
+# 0bCCCCDD000000000000000000
 # C = Control Code (Instruction) [4 bits]
 # D = Direction [2 bits] (See Pistion::DIRECTIONS for order)
-# 0 = Free bit
+# 0 = Free bit [18 bits]
 class Direction < Instruction
   attr_reader :direction
 
@@ -108,6 +97,12 @@ class Direction < Instruction
   end
 end
 
+# Fork Instruction
+#  
+# 0bCCCCDD000000000000000000
+# C = Control Code (Instruction) [4 bits]
+# D = Direction [2 bits]
+# 0 = Free bit [18 bits]
 class Fork < Instruction
   TYPES = [:urd, :dlr, :uld, :ulr]
   attr_reader :type
@@ -188,6 +183,11 @@ class Fork < Instruction
   end
 end
 
+# Jump Instruction
+#  
+# 0bCCCCSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+# C = Control Code (Instruction) [4 bits]
+# S = Spaces [28 bits] number of space beyond the first to jump
 class Jump < Instruction
   attr_reader :spaces
 
@@ -208,6 +208,14 @@ class Jump < Instruction
   end
 end
 
+# Call Instruction
+#  
+# 0bCCCCXWWWWWWWWWYZZZZZZZZZ
+# C = Control Code (Instruction) [4 bits]
+# X = X Sign [1 bit] Deterimines if X is negative or not
+# W = X [9 bits] Number of X spaces to jump
+# Y = Y Sign [1 bit] Deterimines if Y is negative or not
+# Z = X [9 bits] Number of Y spaces to jump
 class Call < Instruction
   attr_reader :x, :y
 
@@ -235,6 +243,15 @@ class Call < Instruction
   end
 end
 
+# Conditional Instruction
+# 
+# 0bCCCCO111XXAAAA222YY00000
+# C = Control Code (Instruction) [4 bits]
+# 1 = Source 1 Register [3 bits]
+# X = Source 1 options [2 bits] TODO: EXPAND BY 2 BITS
+# A = Arithmatic Operation [4 bits] (See Arithmetic::OPERATIONS)
+# 2 = Source 2 Register [3 bits] 
+# Y = Source 1 options [2 bits] TODO: EXPAND BY 2 BITS
 class Conditional < Instruction
   ORIENTATIONS = [:vertical, :horizontal]
   attr_reader :orientation, :s1, :s1o, :op, :s2, :s2o
@@ -252,6 +269,7 @@ class Conditional < Instruction
     @op = Arithmetic::OPERATIONS[((cv&0x3c00)>>10)]
     @s2 = Piston::REGISTERS[((cv&0x380)>>8)]
     @s2o = (cv & 0x60) >> 6
+    # TODO:  CHECK THESE MAY BE AN ERROR WITH S2O
   end
 
   def run(piston)
@@ -289,6 +307,12 @@ class Conditional < Instruction
   end
 end
 
+# Insert Instruction
+#    Inserts a value into I
+#
+# 0bCCCCVVVVVVVVVVVVVVVVVVVV
+# C = Control Code (Instruction) [4 bits]
+# V = Value [20 bits]
 class Insert < Instruction
   set_cc 8
   set_char ?I
@@ -302,6 +326,16 @@ class Insert < Instruction
   end
 end
 
+# Move Instruction
+#    Moves a value from one register to another.
+#
+# 0bCCCCSSSXXDDDYY0000000000
+# C = Control Code (Instruction) [4 bits]
+# S = Source [3 bits]
+# X = Source Options [2 bits] TODO: EXPAND BY 2 BITS
+# D = Destination [3 bits]
+# Y = Destination Options [2 bits] TODO: EXPAND BY 2 BITS
+# TODO: Explain and test swap and reverse.
 class Move < Instruction
   attr_reader :s, :sop, :d, :dop
 
@@ -353,6 +387,16 @@ class Move < Instruction
   end
 end
 
+# Artithmatic Instruction
+#    Performs an arithmatic operation and stores the output in a register
+#
+# 0bCCCCSSSXXDDDYY0000000000
+# C = Control Code (Instruction) [4 bits]
+# S = Source [3 bits]
+# X = Source Options [2 bits] TODO: EXPAND BY 2 BITS
+# D = Destination [3 bits]
+# Y = Destination Options [2 bits] TODO: EXPAND BY 2 BITS
+# TODO: Explain and test swap and reverse.
 class Arithmetic < Instruction
   OPERATIONS = [:+, :-, :*, :/, :**, :&, :|, :^, :%,
                 :<, :>, :<=, :>=, :==, :!=]
