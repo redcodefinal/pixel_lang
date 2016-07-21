@@ -20,11 +20,33 @@ class Piston
 
   # clockwise list of instructions
   DIRECTIONS = [:up, :right, :down, :left]
+  
+  # Total list of resisters
   REGISTERS = [:ma, :mav, :mb, :mbv, :sa, :sv, :i, :o]
+  
+  # List of the regular registers, which all  operate the same. 
+  # Regular registers allow access to a memory wheel.
+  # Registers MA and MB refer to the current memory address for a local piston.
+  # Registers MAV and MBV refer to the value pointed to by MA and MB.
+  # Registers SA and SV refer to the global memory.
+  # All six registers here act the same way, and allow input and output
   REGULAR_REG = REGISTERS[0..5]
+  # List of the special registers, which have special meaning.
+  # Register I is the input register. It allows access to the input buffer in the engine.
+  # Register O is the output register. In allows access to the output buffer in the engine.
+  # I and O work differently from each other and should be treated differently.
+  # I grabs a char from the input buffer if gotten from (I is the/a source). For example using a AR IV + MAV -> OV insuction
+  # Simply using the I register changes the input buffer.
+  # The I register can also be written to, to be used as a one time variable. This appends the input buffer now (Although this may change as I could be thread local.)
+  # The O register kind of works the opposite. 
+  # When O is written to (is the destination) it writes to the output buffer. You can control whether it writes as a char, int, hex int, hex char.
+  # If O is the/a source it will give back the last 20-bits that was given to it. 
   SPECIAL_REG = REGISTERS[6..7]
+  # Input options for register I
   INPUT_OPTIONS = [:int, :char]
+  # Output options for register O
   OUTPUT_OPTIONS =  [:int, :char, :int_hex, :char_hex]
+  # Maximum number allowed (20-bits)
   MAX_INTEGER = 0xfffff
 
   def initialize(parent, position_x, position_y, direction)
@@ -48,7 +70,8 @@ class Piston
   def ma(*options)
     @ma
   end
-
+  
+  # TODO: Shouldn't this be MAX_INTEGER + 1?
   def set_ma(v, *options)
     @ma = v % MAX_INTEGER
   end
@@ -93,6 +116,7 @@ class Piston
     parent.memory[sa] = v % MAX_INTEGER
   end
 
+  # TODO: TEST AND POSSIBLY FIX THIS
   def i(*options)
     code = INPUT_OPTIONS[options.first]
     #if we put a number on the stack
@@ -106,7 +130,7 @@ class Piston
         when :char
           i %= 0x100
       end
-      return i
+      return 
     end
 
     case code
