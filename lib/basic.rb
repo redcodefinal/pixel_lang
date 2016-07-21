@@ -11,6 +11,7 @@ require_relative './piston'
 # 0bCCCC00000000000000000000
 # C = Control Code (Instruction) [4 bits]
 # 0 = Free bit [20 bits]
+class End < Instruction
   set_cc 0
   set_char ?E
   def self.run(piston, *args)
@@ -104,6 +105,7 @@ end
 # D = Direction [2 bits]
 # 0 = Free bit [18 bits]
 class Fork < Instruction
+  # kinds of pipes UpRightDown DownLeftRight etc.
   TYPES = [:urd, :dlr, :uld, :ulr]
   attr_reader :type
 
@@ -245,13 +247,13 @@ end
 
 # Conditional Instruction
 # 
-# 0bCCCCO111XXAAAA222YY00000
+# 0bCCCCO1111XXAAAA2222YY000
 # C = Control Code (Instruction) [4 bits]
 # 1 = Source 1 Register [3 bits]
-# X = Source 1 options [2 bits] TODO: EXPAND BY 2 BITS
+# X = Source 1 options [2 bits]
 # A = Arithmatic Operation [4 bits] (See Arithmetic::OPERATIONS)
 # 2 = Source 2 Register [3 bits] 
-# Y = Source 1 options [2 bits] TODO: EXPAND BY 2 BITS
+# Y = Source 1 options [2 bits]
 class Conditional < Instruction
   ORIENTATIONS = [:vertical, :horizontal]
   attr_reader :orientation, :s1, :s1o, :op, :s2, :s2o
@@ -329,12 +331,12 @@ end
 # Move Instruction
 #    Moves a value from one register to another.
 #
-# 0bCCCCSSSXXDDDYY0000000000
+# 0bCCCCSSSSXXDDDDYY00000000
 # C = Control Code (Instruction) [4 bits]
 # S = Source [3 bits]
-# X = Source Options [2 bits] TODO: EXPAND BY 2 BITS
+# X = Source Options [2 bits]
 # D = Destination [3 bits]
-# Y = Destination Options [2 bits] TODO: EXPAND BY 2 BITS
+# Y = Destination Options [2 bits]
 # TODO: Explain and test swap and reverse.
 class Move < Instruction
   attr_reader :s, :sop, :d, :dop
@@ -390,12 +392,15 @@ end
 # Artithmatic Instruction
 #    Performs an arithmatic operation and stores the output in a register
 #
-# 0bCCCCSSSXXDDDYY0000000000
+# 0bCCCC1111XXOOOO2222YYDDDDZZ
 # C = Control Code (Instruction) [4 bits]
-# S = Source [3 bits]
-# X = Source Options [2 bits] TODO: EXPAND BY 2 BITS
-# D = Destination [3 bits]
-# Y = Destination Options [2 bits] TODO: EXPAND BY 2 BITS
+# 1 = Source 1 [4 bits]
+# X = Source Options [2 bits]
+# O = Operation [4 bits]
+# 2 = Source 2 [4 bits]
+# Y = Source Options [2 bits
+# D = Destination 4 bits]
+# Z = Destination Options [2 bits]
 # TODO: Explain and test swap and reverse.
 class Arithmetic < Instruction
   OPERATIONS = [:+, :-, :*, :/, :**, :&, :|, :^, :%,
