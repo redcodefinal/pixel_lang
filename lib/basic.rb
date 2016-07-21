@@ -191,7 +191,7 @@ end
 # C = Control Code (Instruction) [4 bits]
 # S = Spaces [20 bits] number of space beyond the first to jump
 class Jump < Instruction
-  attr_reader :spaces
+  attr_reader :jumps
 
   set_cc 5
   set_char ?J
@@ -269,8 +269,8 @@ class Conditional < Instruction
     @s1 = Piston::REGISTERS[((cv&0x70000)>>16)]
     @s1o = (cv & 0xc000) >> 14
     @op = Arithmetic::OPERATIONS[((cv&0x3c00)>>10)]
-    @s2 = Piston::REGISTERS[((cv&0x380)>>8)]
-    @s2o = (cv & 0x60) >> 6
+    @s2 = Piston::REGISTERS[((cv&0x380)>>7)]
+    @s2o = (cv & 0x60) >> 5
     # TODO:  CHECK THESE MAY BE AN ERROR WITH S2O
   end
 
