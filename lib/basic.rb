@@ -381,6 +381,7 @@ class Move < Instruction
     if swap
       cs = piston.send(s, sop)
       cd = piston.send(d, dop)
+      # TODO: WTF does this even do??
       piston.send("set_#{s.to_s}", cd, sop)
       piston.send("set_#{d.to_s}", cs, dop)
     else
