@@ -103,6 +103,11 @@ class Engine
     log.debug "^  piston forked! Id: #{new_piston.id}"
   end
 
+  def kill
+    pistons.clear
+    @to_merge.clear
+  end
+
   # writes to the output
   def write_output(string)
     @output << string.to_s
@@ -110,10 +115,13 @@ class Engine
 
   # gets a number from input until it hits the end or a non-number char
   def grab_input_number
+    # ''.to_i is equal to 0
     i = ''
     while input.length != 0 and ('0'..'9').include?(input[0])
+      # TODO: Do we need the extra ''?
       i << '' << @input.slice!(0)
     end
+    # TODO: MAX_INTEGER + 1?
     i.to_i % Piston::MAX_INTEGER
   end
 

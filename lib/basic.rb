@@ -2,9 +2,9 @@ require_relative './instruction'
 require_relative './piston'
 
 # Instruction Composition
-# 0bCCCCVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+# 0bCCCCVVVVVVVVVVVVVVVVVVVV
 # C = Control Code (Instruction) [4 bits]
-# V = Value (Arguments) [28 bits]
+# V = Value (Arguments) [20 bits]
 
 # End Instruction
 #
@@ -21,10 +21,10 @@ end
 
 # Start Instruction
 # 
-# 0bCCCCDDPPPPPPPPPPPPPPPPP
+# 0bCCCCDDPPPPPPPPPPPPPPPPPP
 # C = Control Code (Instruction) [4 bits]
-# D = Direction [2 bits]
-# P = Priority [18 bits] Order in which threads should run their cycles. 0 goes first.
+# D = Direction [2 bits] Direction where the piston should go
+# P = Priority [18 bits] Order in which piston should run their cycles. 0 goes first.
 class Start < Instruction
   attr_reader :direction, :priority
 
@@ -63,7 +63,6 @@ class Pause < Instruction
   end
 
   def run(piston)
-
     self.class.run(piston, cycles)
   end
 
@@ -106,6 +105,7 @@ end
 # 0 = Free bit [18 bits]
 class Fork < Instruction
   # kinds of pipes UpRightDown DownLeftRight etc.
+  # TODO: Add :ulrd a 4way
   TYPES = [:urd, :dlr, :uld, :ulr]
   attr_reader :type
 
@@ -189,7 +189,7 @@ end
 #  
 # 0bCCCCSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 # C = Control Code (Instruction) [4 bits]
-# S = Spaces [28 bits] number of space beyond the first to jump
+# S = Spaces [20 bits] number of space beyond the first to jump
 class Jump < Instruction
   attr_reader :spaces
 
@@ -247,13 +247,13 @@ end
 
 # Conditional Instruction
 # 
-# 0bCCCCO1111XXAAAA2222YY000
+# 0bCCCCO111XXAAAA222YY00000
 # C = Control Code (Instruction) [4 bits]
 # 1 = Source 1 Register [3 bits]
 # X = Source 1 options [2 bits]
 # A = Arithmatic Operation [4 bits] (See Arithmetic::OPERATIONS)
 # 2 = Source 2 Register [3 bits] 
-# Y = Source 1 options [2 bits]
+# Y = Source 2 options [2 bits]
 class Conditional < Instruction
   ORIENTATIONS = [:vertical, :horizontal]
   attr_reader :orientation, :s1, :s1o, :op, :s2, :s2o
@@ -331,12 +331,13 @@ end
 # Move Instruction
 #    Moves a value from one register to another.
 #
-# 0bCCCCSSSSXXDDDDYY00000000
+# 0bCCCCSSSXXDDDYY0000000000
 # C = Control Code (Instruction) [4 bits]
 # S = Source [3 bits]
 # X = Source Options [2 bits]
 # D = Destination [3 bits]
 # Y = Destination Options [2 bits]
+# 0 = Free bit [10 bits]
 # TODO: Explain and test swap and reverse.
 class Move < Instruction
   attr_reader :s, :sop, :d, :dop
@@ -364,6 +365,8 @@ class Move < Instruction
     dop = args[3]
 
     #decode swap and reverse options
+    # if both of the registers are normal
+    # to ensure i and o dont have their options mixed
     if Piston::REGULAR_REG.include?(s) and Piston::REGULAR_REG.include?(d)
       o = sop^dop
       swap = ((o>>1) != LOGICAL_FALSE)
@@ -390,17 +393,17 @@ class Move < Instruction
   end
 end
 
-# Artithmatic Instruction
+# Arithmetic Instruction
 #    Performs an arithmatic operation and stores the output in a register
 #
-# 0bCCCC1111XXOOOO2222YYDDDDZZ
+# 0bCCCC111XXOOOO222YYDDDZZ0
 # C = Control Code (Instruction) [4 bits]
-# 1 = Source 1 [4 bits]
+# 1 = Source 1 [3 bits]
 # X = Source Options [2 bits]
 # O = Operation [4 bits]
-# 2 = Source 2 [4 bits]
+# 2 = Source 2 [3 bits]
 # Y = Source Options [2 bits
-# D = Destination 4 bits]
+# D = Destination [3 bits]
 # Z = Destination Options [2 bits]
 # TODO: Explain and test swap and reverse.
 class Arithmetic < Instruction
@@ -458,7 +461,7 @@ class OutputValueAsChar < Instruction
   end
 end
 
-class OutputValue <Instruction
+class OutputValue < Instruction
   set_cc 0xC
   set_char ?O
 
@@ -471,7 +474,23 @@ class OutputValue <Instruction
   end
 end
 
+class Reset < Instruction
+  set_cc ?D
+  # TODO: Test piston reset
+  def self.run(piston, *args)
+    piston.reset
+  end
+end
+
+class Kill < Instruction
+  set_cc ?E
+  # TODO: Test engine kill switch
+  def self.run(piston, *args)
+    piston.parent.kill
+  end
+end
+
 class Blank < Instruction
   set_cc 0xf
-  set_char ?B
+  set_char " "
 end

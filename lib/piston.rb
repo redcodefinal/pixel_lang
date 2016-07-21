@@ -22,20 +22,21 @@ class Piston
   DIRECTIONS = [:up, :right, :down, :left]
   
   # Total list of resisters
-  REGISTERS = [:ma, :mav, :mb, :mbv, :sa, :sv, :i, :o]
+  REGISTERS = [:ma, :mav, :mb, :mbv, :s, :sv, :i, :o]
   
   # List of the regular registers, which all  operate the same. 
   # Regular registers allow access to a memory wheel.
   # Registers MA and MB refer to the current memory address for a local piston.
   # Registers MAV and MBV refer to the value pointed to by MA and MB.
-  # Registers SA and SV refer to the global memory.
+  # Registers S and SV refer to the global memory.
   # All six registers here act the same way, and allow input and output
   REGULAR_REG = REGISTERS[0..5]
   # List of the special registers, which have special meaning.
   # Register I is the input register. It allows access to the input buffer in the engine.
   # Register O is the output register. In allows access to the output buffer in the engine.
   # I and O work differently from each other and should be treated differently.
-  # I grabs a char from the input buffer if gotten from (I is the/a source). For example using a AR IV + MAV -> OV insuction
+  # I grabs a char from the input buffer if gotten from (I is the/a source). For example using a AR IV + MAV -> OV instruction
+  # IV grabs a value from memory, IC grabs only a char
   # Simply using the I register changes the input buffer.
   # The I register can also be written to, to be used as a one time variable. This appends the input buffer now (Although this may change as I could be thread local.)
   # The O register kind of works the opposite. 
@@ -47,7 +48,7 @@ class Piston
   # Output options for register O
   OUTPUT_OPTIONS =  [:int, :char, :int_hex, :char_hex]
   # Maximum number allowed (20-bits)
-  MAX_INTEGER = 0xfffff
+  MAX_INTEGER = 0x100000
 
   def initialize(parent, position_x, position_y, direction)
     @parent = parent
@@ -59,10 +60,6 @@ class Piston
     @paused_counter = 0
     @ended = false
     @id = parent.make_id
-
-    @ma = 0
-    @mb = 0
-    @sa = 0
 
     reset
   end
@@ -100,37 +97,37 @@ class Piston
     @memory[mb] = v % MAX_INTEGER
   end
 
-  def sa(*options)
-    @sa
+  def s(*options)
+    @s
   end
 
   def set_sa(v, *options)
-    @sa = v % MAX_INTEGER
+    @s = v % MAX_INTEGER
   end
 
   def sv(*options)
-    parent.memory[sa]
+    parent.memory[s]
   end
 
   def set_sv(v, *options)
-    parent.memory[sa] = v % MAX_INTEGER
+    parent.memory[s] = v % MAX_INTEGER
   end
 
   # TODO: TEST AND POSSIBLY FIX THIS
   def i(*options)
     code = INPUT_OPTIONS[options.first]
     #if we put a number on the stack
-    if @i
-      i = @i
-      @i = nil
+    unless @i.empty?
+      i = @i.pop
 
-      case code
+      return case code
         when :int
           i
         when :char
           i %= 0x100
+        else
+          fail
       end
-      return 
     end
 
     case code
@@ -144,11 +141,11 @@ class Piston
   end
 
   def set_i(v, *options)
-    parent.input.unshift @i if @i
-    @i = v
+    @i << v
   end
 
   def o(*options)
+    # TODO: Add fix if no options for i and o
     code = INPUT_OPTIONS[options.first]
     case code
       when :int
@@ -179,8 +176,14 @@ class Piston
 
   # resets memory
   def reset
+    #TODO: Test reset
     @memory = {}
     memory.default = 0
+
+    @ma = 0
+    @mb = 1
+    @s = 0
+    @i = []
   end
 
   def clone
@@ -209,9 +212,9 @@ class Piston
     parent.log.debug "^     mav:#{mav.to_s 16}"
     parent.log.debug "^     mb:#{mb.to_s 16}"
     parent.log.debug "^     mbv:#{mbv.to_s 16}"
-    parent.log.debug "^     sa:#{sa.to_s 16}"
+    parent.log.debug "^     s:#{s.to_s 16}"
     parent.log.debug "^     sv:#{sv.to_s 16}"
-    parent.log.debug "^     i:#{@i.ord.to_s 16}" if @i
+    parent.log.debug "^     i:#{@i.inject("") {|s ,a| s += a.to_s(16)}}"
     parent.log.debug '^  Machine state:'
     parent.log.debug "^     static: #{parent.memory}"
     parent.log.debug "^     output: #{parent.output}"
