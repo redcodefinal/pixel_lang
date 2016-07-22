@@ -203,7 +203,9 @@ class Piston
     end
 
     instruction = parent.instructions.get_instruction(position_x, position_y)
-    fail unless instruction
+    unless instruction
+      fail "AT POSITION #{position_x}   #{position_y}"
+    end
     parent.log.info "T#{id} C:#{parent.cycles} Running #{instruction.class} @ #{position_x}, #{position_y} CV: #{instruction.cv.to_s 16}"
     instruction.run(self)
     parent.log.debug '^  Piston state:'
