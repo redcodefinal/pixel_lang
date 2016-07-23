@@ -121,7 +121,6 @@ class Engine
       # TODO: Do we need the extra ''?
       i << '' << @input.slice!(0)
     end
-    # TODO: MAX_INTEGER + 1?
     i.to_i % Piston::MAX_INTEGER
   end
 
@@ -140,4 +139,5 @@ class Engine
   def ended?
     pistons.empty? and @to_merge.empty?
   end
+
 end

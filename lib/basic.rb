@@ -254,6 +254,8 @@ end
 # 2 = Source 2 Register [3 bits] 
 # Y = Source 2 options [2 bits]
 class Conditional < Instruction
+  # TODO: Utilize last 5 bits for other orientation types
+  # :pass_through, :reverse_pass_through, :turn_left, :turn_right, :straight_or_left, :straight_or_right
   ORIENTATIONS = [:vertical, :horizontal]
 
   set_cc 7
@@ -398,7 +400,6 @@ class Move < Instruction
     if swap
       cs = piston.send(s, sop)
       cd = piston.send(d, dop)
-      # TODO: WTF does this even do??
       piston.send("set_#{s.to_s}", cd, sop)
       piston.send("set_#{d.to_s}", cs, dop)
     else
@@ -419,7 +420,6 @@ end
 # Y = Source Options [2 bits
 # D = Destination [3 bits]
 # Z = Destination Options [2 bits]
-# TODO: Explain and test swap and reverse.
 class Arithmetic < Instruction
   OPERATIONS = [:+, :-, :*, :/, :**, :&, :|, :^, :%,
                 :<, :>, :<=, :>=, :==, :!=]
@@ -489,21 +489,13 @@ class OutputValueAsChar < Instruction
   end
 end
 
-class OutputValue < Instruction
+class UnusedInstruction < Instruction
   set_cc 0xC
-  set_char ?O
-
-  def run(piston)
-    self.class.run(piston, cv)
-  end
-
-  def self.run(piston, *args)
-    piston.parent.write_output args[0]
-  end
 end
 
 class Reset < Instruction
   set_cc 0xD
+  set_char ?R
   # TODO: Test piston reset
   def self.run(piston, *args)
     piston.reset
@@ -512,6 +504,7 @@ end
 
 class Kill < Instruction
   set_cc 0XE
+  set_char ?K
   # TODO: Test engine kill switch
   def self.run(piston, *args)
     piston.parent.kill

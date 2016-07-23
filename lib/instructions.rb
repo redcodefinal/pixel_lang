@@ -44,12 +44,16 @@ class Instructions
   # list of the thread entry points
   attr_reader :start_points
 
+  attr_reader :width, :height
+
 
   def initialize(image_file)
     image = ImageList.new(File.absolute_path(image_file))
 
     # create array
-    @array = Array.new(image.columns) { Array.new(image.rows) }
+    @width = image.columns
+    @height = image.rows
+    @array = Array.new(width) { Array.new(height) }
 
     # fill patterns
     image.columns.times do |x|
@@ -77,6 +81,10 @@ class Instructions
 
     # sort the array by priority
     @start_points.sort! { |l, r| l.p.cv <=> r.p.cv }
+  end
+
+  def [] index
+    @array[index]
   end
 
   # grab an instruction at the location x, y

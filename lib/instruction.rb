@@ -22,7 +22,7 @@ class Instruction
   end
 
   class << self
-    attr_reader :control_code
+    attr_reader :cc
     attr_reader :char
 
     def set_char(c)
@@ -30,11 +30,11 @@ class Instruction
     end
 
     def set_cc(cc)
-      @control_code = cc
+      @cc = cc
     end
 
     def match(color)
-      ((color.value & 0xf00000) >> 20)  == control_code
+      ((color.value & 0xf00000) >> 20)  == @cc
     end
 
     def run(piston, *args)
