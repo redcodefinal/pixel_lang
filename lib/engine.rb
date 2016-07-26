@@ -139,5 +139,4 @@ class Engine
   def ended?
     pistons.empty? and @to_merge.empty?
   end
-
 end

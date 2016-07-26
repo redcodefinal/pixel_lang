@@ -67,8 +67,7 @@ class Piston
   def ma(*options)
     @ma
   end
-  
-  # TODO: Shouldn't this be MAX_INTEGER + 1?
+
   def set_ma(v, *options)
     @ma = v % MAX_INTEGER
   end
@@ -113,7 +112,6 @@ class Piston
     parent.memory[s] = v % MAX_INTEGER
   end
 
-  # TODO: TEST AND POSSIBLY FIX THIS
   def i(*options)
     code = INPUT_OPTIONS[options.first]
     #if we put a number on the stack
@@ -186,8 +184,15 @@ class Piston
     @i = []
   end
 
+  # TODO: CLONE NEEDS FIX WTF!
   def clone
-    Piston.new(parent, position_x, position_y, direction)
+    new_piston = Piston.new(parent, position_x, position_y, direction)
+    new_piston.instance_variable_set("@memory", @memory.clone)
+    new_piston.instance_variable_set("@ma", @ma)
+    new_piston.instance_variable_set("@mb", @mb)
+    new_piston.instance_variable_set("@s", @s)
+    new_piston.instance_variable_set("@i", @i.clone)
+    new_piston
   end
 
   # runs a single instruction and moves

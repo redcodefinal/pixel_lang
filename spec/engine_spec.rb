@@ -36,6 +36,12 @@ describe 'Engine Tests' do
     engine.run
     expect(engine.output).to eq "1 1 2 3 5 8 13 21 34 55 89"
   end
+  it 'should run sum_of_divisors_of_3' do
+    engine = Engine.new 'programs/sum_of_divisors_of_3.bmp', "9"
+    engine.run
+    expect(engine.output).to eq "166833"
+  end
+
 
   #easy tests
   it 'should run int_overflow_test' do
