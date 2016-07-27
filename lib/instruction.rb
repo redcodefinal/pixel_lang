@@ -3,6 +3,13 @@ class Instruction
   LOGICAL_FALSE = 0
   LOGICAL_TRUE = 1
 
+  CONTROL_CODE_BITS = 4
+  CONTROL_CODE_BITMASK = 0xF00000
+  CONTROL_CODE_BITSHIFT = 20
+
+  COLOR_VALUR_BITS = 20
+  COLOR_VALUE_BITMASK = 0xFFFFF
+
   attr_reader :color
 
   def initialize(color)
@@ -10,11 +17,11 @@ class Instruction
   end
 
   def cc
-    (color.value & 0xf00000) >> 20
+    (color.value & CONTROL_CODE_BITMASK) >> CONTROL_CODE_BITSHIFT
   end
 
   def cv
-    color.value & 0x0fffff
+    color.value & COLOR_VALUE_BITMASK
   end
 
   def run(piston)
@@ -34,7 +41,7 @@ class Instruction
     end
 
     def match(color)
-      ((color.value & 0xf00000) >> 20)  == @cc
+      ((color.value & CONTROL_CODE_BITMASK) >> CONTROL_CODE_BITSHIFT)  == @cc
     end
 
     def run(piston, *args)

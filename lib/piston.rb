@@ -38,7 +38,7 @@ class Piston
   # I grabs a char from the input buffer if gotten from (I is the/a source). For example using a AR IV + MAV -> OV instruction
   # IV grabs a value from memory, IC grabs only a char
   # Simply using the I register changes the input buffer.
-  # The I register can also be written to, to be used as a one time variable. This appends the input buffer now (Although this may change as I could be thread local.)
+  # The I register can also be written to, to be used as a stack. The stack is piston local and does not append the input.
   # The O register kind of works the opposite. 
   # When O is written to (is the destination) it writes to the output buffer. You can control whether it writes as a char, int, hex int, hex char.
   # If O is the/a source it will give back the last 20-bits that was given to it. 

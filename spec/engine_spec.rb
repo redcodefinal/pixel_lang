@@ -25,6 +25,7 @@ describe 'Engine Tests' do
     a_to_z.run_one_instruction
     a_to_z.run_one_instruction
     a_to_z.run_one_instruction
+
     expect(a_to_z.output).to eq "AB"
 
     a_to_z.run
@@ -37,7 +38,7 @@ describe 'Engine Tests' do
     expect(engine.output).to eq "1 1 2 3 5 8 13 21 34 55 89"
   end
   it 'should run sum_of_divisors_of_3' do
-    engine = Engine.new 'programs/sum_of_divisors_of_3.bmp', "9"
+    engine = Engine.new 'programs/sum_of_divisors_of_3.bmp'
     engine.run
     expect(engine.output).to eq "166833"
   end
