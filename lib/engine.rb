@@ -1,11 +1,14 @@
+require 'rmagick'
+require 'logger'
+require 'require_all'
+
 require_relative './instruction'
 require_relative './piston'
 require_relative './instructions'
 require_relative './color'
-require_relative './basic'
 
-require 'rmagick'
-require 'logger'
+require_rel './basic'
+
 include Magick
 
 # object for reading, executing, and providing input for pixel_lang pistons.

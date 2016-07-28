@@ -1,3 +1,8 @@
+# Instruction Composition
+# 0bCCCCVVVVVVVVVVVVVVVVVVVV
+# C = Control Code (Instruction) [4 bits]
+# V = Value (Arguments) [20 bits]
+
 class Instruction
 
   LOGICAL_FALSE = 0

@@ -4,7 +4,7 @@ require_relative '../lib/engine'
 
 describe 'Engine Tests' do
   it 'should run a_to_z' do
-    a_to_z = Engine.new('programs/a_to_z.bmp')
+    a_to_z = Engine.new('programs/simple_examples/a_to_z.bmp')
     a_to_z.run_one_instruction
     a_to_z.run_one_instruction
     a_to_z.run_one_instruction
@@ -33,14 +33,21 @@ describe 'Engine Tests' do
   end
 
   it 'should run fibonacci' do
-    engine = Engine.new 'programs/fibonacci.bmp', "9"
+    engine = Engine.new 'programs/math/fibonacci.bmp', "9"
     engine.run
     expect(engine.output).to eq "1 1 2 3 5 8 13 21 34 55 89"
   end
+
   it 'should run sum_of_divisors_of_3' do
-    engine = Engine.new 'programs/sum_of_divisors_of_3.bmp'
+    engine = Engine.new 'programs/project_euler/1/sketches/sum_of_divisors_of_3.bmp'
     engine.run
     expect(engine.output).to eq "166833"
+  end
+
+  it 'should run sum_of_divisors_of_5_not_3' do
+    engine = Engine.new 'programs/project_euler/1/sketches/sum_of_divisors_of_5_not_3.bmp'
+    engine.run
+    expect(engine.memory[0]).to eq 66335
   end
 
 
