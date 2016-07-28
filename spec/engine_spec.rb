@@ -50,6 +50,19 @@ describe 'Engine Tests' do
     expect(engine.memory[0]).to eq 66335
   end
 
+  it 'should run project_euler 1' do
+    engine = Engine.new 'programs/project_euler/1/solution.bmp'
+    engine.run
+    expect(engine.memory[0]).to eq 233168
+    expect(engine.output).to eq "233168"
+  end
+
+  it 'should run project_euler 2' do
+    engine = Engine.new 'programs/project_euler/2/solution.bmp', '10'
+    engine.run
+    expect(engine.output).to eq "233168"
+  end
+
 
   #easy tests
   it 'should run int_overflow_test' do
