@@ -7,16 +7,6 @@ class Direction < Instruction
 
   DIRECTION_BITMASK = 0x3
 
-  #TODO: Add more directions (turn_left, turn_right, turn_around)
-
-  def direction
-    Piston::DIRECTIONS[(cv & DIRECTION_BITMASK)]
-  end
-
-  def run(piston)
-    self.class.run(piston, direction)
-  end
-
   def self.reference_card
     puts %q{
     Direction Instruction
@@ -36,5 +26,15 @@ class Direction < Instruction
 
   def self.run(piston, *args)
     piston.change_direction(args.first)
+  end
+
+  #TODO: Add more directions (turn_left, turn_right, turn_around)
+
+  def direction
+    Piston::DIRECTIONS[(cv & DIRECTION_BITMASK)]
+  end
+
+  def run(piston)
+    self.class.run(piston, direction)
   end
 end

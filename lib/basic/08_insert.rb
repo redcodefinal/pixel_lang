@@ -5,10 +5,6 @@ class Insert < Instruction
   set_cc 8
   set_char ?I
 
-  def run(piston)
-    self.class.run(piston, cv)
-  end
-
   def self.reference_card
     puts %q{
     Insert Instruction
@@ -32,5 +28,9 @@ class Insert < Instruction
 
   def self.run(piston, *args)
     piston.set_i args[0]
+  end
+
+  def run(piston)
+    self.class.run(piston, cv)
   end
 end

@@ -100,7 +100,7 @@ class Piston
     @s
   end
 
-  def set_sa(v, *options)
+  def set_s(v, *options)
     @s = v % MAX_INTEGER
   end
 
@@ -118,6 +118,7 @@ class Piston
     unless @i.empty?
       i = @i.pop
 
+      #TODO: Add non-pop versions of :int and :char
       return case code
         when :int
           i

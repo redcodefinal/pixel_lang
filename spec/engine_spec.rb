@@ -58,9 +58,19 @@ describe 'Engine Tests' do
   end
 
   it 'should run project_euler 2' do
-    engine = Engine.new 'programs/project_euler/2/solution.bmp', '10'
+    max = 10
+    engine = Engine.new 'programs/project_euler/2/solution.bmp', max.to_s
     engine.run
-    expect(engine.output).to eq "233168"
+
+    expect(engine.memory[max]).to eq 10
+    expect(engine.output).to eq "10"
+
+    max = 100
+    engine = Engine.new 'programs/project_euler/2/solution.bmp', max.to_s
+    engine.run
+
+    expect(engine.memory[max]).to eq 44
+    expect(engine.output).to eq "44"
   end
 
 

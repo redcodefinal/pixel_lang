@@ -21,6 +21,38 @@ class Call < Instruction
   Y_BITMASK = 0x1ff
   Y_BITSHIFT = 0
 
+  def self.reference_card
+    puts %q{
+    Call Instruction
+    Jumps a piston to a nearby instruction by the offset coordinates.
+
+    0bCCCCXWWWWWWWWWYZZZZZZZZZ
+    C = Control Code (Instruction) [4 bits]
+    X = X Sign [1 bit] Deterimines if X is negative or not
+    W = X [9 bits] Number of X spaces to jump
+    Y = Y Sign [1 bit] Deterimines if Y is negative or not
+    Z = Y [9 bits] Number of Y spaces to jump
+    }
+  end
+
+  def self.make_color(*args)
+    #TODO: Write proper out of bounds check
+    x = args.first
+    y = args.last
+
+    x_sign = x < 0
+    y_sign = y < 0
+
+    x = x.abs
+    y = y.abs
+
+    (cc << CONTROL_CODE_BITSHIFT) + (((x_sign)?1:0) << X_SIGN_BITSHIFT) + (x << X_BITSHIFT) + (((y_sign)?1:0) << Y_SIGN_BITSHIFT) + (y << Y_BITSHIFT)
+  end
+
+  def self.run(piston, *args)
+    piston.jump(args.first, args.last)
+  end
+
 
   def x_sign
     cv>>X_SIGN_BITSHIFT
@@ -48,36 +80,5 @@ class Call < Instruction
 
   def run(piston)
     self.class.run(piston, x, y)
-  end
-
-  def self.reference_card
-    puts %q{
-    Call Instruction
-    Jumps a piston to a nearby instruction by the offset coordinates.
-
-    0bCCCCXWWWWWWWWWYZZZZZZZZZ
-    C = Control Code (Instruction) [4 bits]
-    X = X Sign [1 bit] Deterimines if X is negative or not
-    W = X [9 bits] Number of X spaces to jump
-    Y = Y Sign [1 bit] Deterimines if Y is negative or not
-    Z = Y [9 bits] Number of Y spaces to jump
-    }
-  end
-
-  def self.make_color(*args)
-    x = args.first
-    y = args.last
-
-    x_sign = x < 0
-    y_sign = y < 0
-
-    x = x.abs
-    y = y.abs
-
-    (cc << CONTROL_CODE_BITSHIFT) + (((x_sign)?1:0) << X_SIGN_BITSHIFT) + (x << X_BITSHIFT) + (((y_sign)?1:0) << Y_SIGN_BITSHIFT) + (y << Y_BITSHIFT)
-  end
-
-  def self.run(piston, *args)
-    piston.jump(args.first, args.last)
   end
 end

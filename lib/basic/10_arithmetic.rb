@@ -36,38 +36,6 @@ class Arithmetic < Instruction
   DESTINATION_OPTIONS_BITMASK = 0x6
   DESTINATION_OPTIONS_BITSHIFT = 1
 
-  def s1
-    Piston::REGISTERS[cv>>SOURCE_1_BITSHIFT]
-  end
-
-  def s1op
-    (cv&SOURCE_1_OPTIONS_BITMASK)>>SOURCE_1_OPTIONS_BITSHIFT
-  end
-
-  def op
-    Arithmetic::OPERATIONS[(cv&OPERATION_BITMASK)>>OPERATIONS_BITSHIFT]
-  end
-
-  def s2
-    Piston::REGISTERS[(cv&SOURCE_2_BITMASK)>>SOURCE_2_BITSHIFT]
-  end
-
-  def s2op
-    (cv&SOURCE_2_OPTIONS_BITMASK)>>SOURCE_2_OPTIONS_BITSHIFT
-  end
-
-  def d
-    Piston::REGISTERS[(cv&DESTINATION_BITMASK)>>DESTINATION_BITSHIFT]
-  end
-
-  def dop
-    (cv&DESTINATION_OPTIONS_BITMASK)>>DESTINATION_OPTIONS_BITSHIFT
-  end
-
-  def run(piston)
-    self.class.run(piston, s1, s1op, op, s2, s2op, d, dop)
-  end
-
   def self.reference_card
     puts %q{
     Arithmetic Instruction
@@ -114,8 +82,40 @@ class Arithmetic < Instruction
 
     v1 = piston.send(s1, s1op)
     v2 = piston.send(s2, s2op)
-    result = v1.send(op, v2)
+    result = v1.send(op, v2).round
 
     piston.send("set_#{d.to_s}", result, dop)
+  end
+
+  def s1
+    Piston::REGISTERS[cv>>SOURCE_1_BITSHIFT]
+  end
+
+  def s1op
+    (cv&SOURCE_1_OPTIONS_BITMASK)>>SOURCE_1_OPTIONS_BITSHIFT
+  end
+
+  def op
+    Arithmetic::OPERATIONS[(cv&OPERATION_BITMASK)>>OPERATIONS_BITSHIFT]
+  end
+
+  def s2
+    Piston::REGISTERS[(cv&SOURCE_2_BITMASK)>>SOURCE_2_BITSHIFT]
+  end
+
+  def s2op
+    (cv&SOURCE_2_OPTIONS_BITMASK)>>SOURCE_2_OPTIONS_BITSHIFT
+  end
+
+  def d
+    Piston::REGISTERS[(cv&DESTINATION_BITMASK)>>DESTINATION_BITSHIFT]
+  end
+
+  def dop
+    (cv&DESTINATION_OPTIONS_BITMASK)>>DESTINATION_OPTIONS_BITSHIFT
+  end
+
+  def run(piston)
+    self.class.run(piston, s1, s1op, op, s2, s2op, d, dop)
   end
 end

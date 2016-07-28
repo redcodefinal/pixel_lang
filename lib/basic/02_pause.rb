@@ -5,14 +5,6 @@ class Pause < Instruction
   set_cc 2
   set_char ?P
 
-  def cycles
-    cv
-  end
-
-  def run(piston)
-    self.class.run(piston, cycles)
-  end
-
   def self.reference_card
     puts %q{
     Pause Instruction
@@ -36,5 +28,13 @@ class Pause < Instruction
 
   def self.run(piston, *args)
     piston.pause args.first
+  end
+
+  def cycles
+    cv
+  end
+
+  def run(piston)
+    self.class.run(piston, cycles)
   end
 end

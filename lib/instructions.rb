@@ -64,7 +64,7 @@ class Instructions
         color.r = c.red / 0x100
         color.g = c.green / 0x100
         color.b = c.blue / 0x100
-        @array[x][y] = Instructions.get_instruction(color).new color
+        set_instruction color, x, y
       end
     end
 
@@ -90,5 +90,9 @@ class Instructions
   # grab an instruction at the location x, y
   def get_instruction(x, y)
     @array[x][y]
+  end
+
+  def set_instruction(color, x, y)
+    @array[x][y] = Instructions.get_instruction(color).new color
   end
 end

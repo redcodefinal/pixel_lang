@@ -5,14 +5,6 @@ class Jump < Instruction
   set_cc 5
   set_char ?J
 
-  def jumps
-    cv
-  end
-
-  def run(piston)
-    self.class.run(piston, jumps+1)
-  end
-
   def self.reference_card
     puts %q{
     Jump Instruction
@@ -30,5 +22,13 @@ class Jump < Instruction
 
   def self.run(piston, *args)
     piston.move args[0]
+  end
+
+  def jumps
+    cv
+  end
+
+  def run(piston)
+    self.class.run(piston, jumps+1)
   end
 end

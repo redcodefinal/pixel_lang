@@ -11,18 +11,6 @@ class Start < Instruction
   PRIORITY_BITS = 18
   PRIORITY_BITMASK = 0x3FFFF
 
-  def direction
-    Piston::DIRECTIONS[((cv & DIRECTION_BITMASK) >> DIRECTION_BITSHIFT)]
-  end
-
-  def priority
-    (cv & PRIORITY_BITMASK)
-  end
-
-  def run(piston)
-    self.class.run(piston, direction, priority)
-  end
-
   def self.reference_card
     puts %q{
     Start Instruction
@@ -48,5 +36,17 @@ class Start < Instruction
 
   def self.run(piston, *args)
     piston.change_direction(args.first)
+  end
+
+  def direction
+    Piston::DIRECTIONS[((cv & DIRECTION_BITMASK) >> DIRECTION_BITSHIFT)]
+  end
+
+  def priority
+    (cv & PRIORITY_BITMASK)
+  end
+
+  def run(piston)
+    self.class.run(piston, direction, priority)
   end
 end

@@ -23,27 +23,6 @@ class Move < Instruction
   DESTINATION_OPTIONS_BITMASK = 0xc00
   DESTINATION_OPTIONS_BITSHIFT = 10
 
-
-  def s
-    Piston::REGISTERS[(cv&SOURCE_BITMASK)>>SOURCE_BITSHIFT]
-  end
-
-  def sop
-    (cv&SOURCE_OPTIONS_BITMASK)>>SOURCE_OPTIONS_BITSHIFT
-  end
-
-  def d
-    Piston::REGISTERS[(cv&DESTINATION_BITMASK)>>DESTINATION_BITSHIFT]
-  end
-
-  def dop
-    (cv&DESTINATION_OPTIONS_BITMASK) >> DESTINATION_OPTIONS_BITSHIFT
-  end
-
-  def run(piston)
-    self.class.run(piston, s, sop, d, dop)
-  end
-
   def self.reference_card
     puts %q{
     Move Instruction
@@ -103,5 +82,25 @@ class Move < Instruction
     else
       piston.send("set_#{d.to_s}", piston.send(s, sop), dop)
     end
+  end
+
+  def s
+    Piston::REGISTERS[(cv&SOURCE_BITMASK)>>SOURCE_BITSHIFT]
+  end
+
+  def sop
+    (cv&SOURCE_OPTIONS_BITMASK)>>SOURCE_OPTIONS_BITSHIFT
+  end
+
+  def d
+    Piston::REGISTERS[(cv&DESTINATION_BITMASK)>>DESTINATION_BITSHIFT]
+  end
+
+  def dop
+    (cv&DESTINATION_OPTIONS_BITMASK) >> DESTINATION_OPTIONS_BITSHIFT
+  end
+
+  def run(piston)
+    self.class.run(piston, s, sop, d, dop)
   end
 end
