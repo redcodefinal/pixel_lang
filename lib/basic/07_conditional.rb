@@ -2,10 +2,9 @@ require_relative './../instruction'
 require_relative './../piston'
 class Conditional < Instruction
   # TODO: Utilize last 5 bits for other orientation types
-  # :reverse_horizontal, :reverse_vertical
   # :pass_through, :reverse_pass_through
   # :turn_left, :turn_right, :straight_or_left, :straight_or_right
-  TYPES = [:vertical, :horizontal]
+  TYPES = [:vertical, :horizontal, :reverse_vertical, :reverse_horizontal]
 
   set_cc 7
   set_char ?C
@@ -63,7 +62,7 @@ class Conditional < Instruction
     op = Arithmetic::OPERATIONS.index(op) << OPERATIONS_BITSHIFT
     s2 = Piston::REGISTERS.index(s2) << SOURCE_2_BITSHIFT
 
-    (cc << CONTROL_CODE_BITSHIFT) + type + s1 + s1op + op + s2 + s2op
+    ((cc << CONTROL_CODE_BITSHIFT) + type + s1 + s1op + op + s2 + s2op).to_s 16
   end
 
   def self.run(piston, *args)
@@ -80,6 +79,10 @@ class Conditional < Instruction
         directions = [:up, :down]
       when :horizontal
         directions = [:left, :right]
+      when :reverse_vertical
+        directions = [:down, :up]
+      when :reverse_horizontal
+        directions = [:right, :left]
       else
         fail "CONDITIONAL_ORIENTATION_ERROR"
     end

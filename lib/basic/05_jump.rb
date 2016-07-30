@@ -17,7 +17,7 @@ class Jump < Instruction
   end
 
   def self.make_color(*args)
-    (cc << CONTROL_CODE_BITSHIFT) + args.first
+    ((cc << CONTROL_CODE_BITSHIFT) + args.first).to_s 16
   end
 
   def self.run(piston, *args)

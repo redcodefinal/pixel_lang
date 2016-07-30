@@ -31,7 +31,7 @@ class Start < Instruction
       fail "Priority #{priority.to_s 16} cannot be higher than #{PRIORITY_BITMASK} or #{PRIORITY_BITMASK.to_s 16}"
     end
 
-    (cc << CONTROL_CODE_BITSHIFT) + direction + priority
+    ((cc << CONTROL_CODE_BITSHIFT) + direction + priority).to_s 16
   end
 
   def self.run(piston, *args)

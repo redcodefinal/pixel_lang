@@ -48,7 +48,7 @@ class Move < Instruction
     destination = Piston::REGISTERS.index(destination) << DESTINATION_BITSHIFT
 
 
-    (cc << CONTROL_CODE_BITSHIFT) + source + source_options + destination + destination_options
+    ((cc << CONTROL_CODE_BITSHIFT) + source + source_options + destination + destination_options).to_s 16
   end
 
   def self.run(piston, *args)

@@ -23,7 +23,7 @@ class Insert < Instruction
       cv = args.first % Piston::MAX_INTEGER
     end
 
-    (cc << CONTROL_CODE_BITSHIFT) + cv
+    ((cc << CONTROL_CODE_BITSHIFT) + cv).to_s 16
   end
 
   def self.run(piston, *args)

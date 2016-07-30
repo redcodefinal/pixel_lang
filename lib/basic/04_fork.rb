@@ -24,7 +24,7 @@ class Fork < Instruction
 
   def self.make_color(*args)
     type = Fork::TYPES.index(args.first)
-    (cc << CONTROL_CODE_BITSHIFT) + type
+    ((cc << CONTROL_CODE_BITSHIFT) + type).to_s 16
   end
 
   def self.run(piston, *args)

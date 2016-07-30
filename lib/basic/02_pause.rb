@@ -23,7 +23,7 @@ class Pause < Instruction
       fail "Cycles #{cycles.to_s 16} cannot be higher than #{COLOR_VALUE_BITMASK} or #{COLOR_VALUE_BITMASK.to_s 16}"
     end
 
-    (cc << CONTROL_CODE_BITSHIFT) + cycles
+    ((cc << CONTROL_CODE_BITSHIFT) + cycles).to_s 16
   end
 
   def self.run(piston, *args)

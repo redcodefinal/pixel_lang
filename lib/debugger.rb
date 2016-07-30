@@ -97,9 +97,9 @@ class Debugger
   end
 
   def show_pistons(**options)
-    registers_data = []
 
     engine.pistons.each do |piston|
+      registers_data = []
       registers_data << ["id", piston.id]
       registers_data << ["x", piston.position_x]
       registers_data << ["y", piston.position_y]

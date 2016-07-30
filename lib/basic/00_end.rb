@@ -22,7 +22,7 @@ class End < Instruction
       cv = args.first % 0x100000
     end
 
-    (cc << CONTROL_CODE_BITSHIFT) + cv
+    ((cc << CONTROL_CODE_BITSHIFT) + cv).to_s 16
   end
 
   def self.run(piston, *args)

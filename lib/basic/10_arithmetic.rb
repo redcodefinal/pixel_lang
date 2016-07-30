@@ -68,7 +68,7 @@ class Arithmetic < Instruction
     s2 = Piston::REGISTERS.index(s2) << SOURCE_2_BITSHIFT
     d = Piston::REGISTERS.index(d) << DESTINATION_BITSHIFT
 
-    (cc << CONTROL_CODE_BITSHIFT) + s1 + s1op + op + s2 + s2op + d + dop
+    ((cc << CONTROL_CODE_BITSHIFT) + s1 + s1op + op + s2 + s2op + d + dop).to_s 16
   end
 
   def self.run(piston, *args)

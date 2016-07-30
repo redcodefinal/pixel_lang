@@ -92,10 +92,10 @@ class Meta < Instruction
     coord_register = Piston::REGISTERS.index(args[6]) << COORD_REGISTER_BITSHIFT
     coord_register_options = args[7] << COORD_REGISTER_OPTIONS_BITSHIFT
 
-    (cc << CONTROL_CODE_BITSHIFT) + meta_command + meta_command_options +
+   ((cc << CONTROL_CODE_BITSHIFT) + meta_command + meta_command_options +
       control_code_register + control_code_register_options +
       color_value_register + color_value_register_options +
-      coord_register + coord_register_options
+      coord_register + coord_register_options).to_s 16
   end
 
   def self.get_abs_coord(cv)

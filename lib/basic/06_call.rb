@@ -46,7 +46,7 @@ class Call < Instruction
     x = x.abs
     y = y.abs
 
-    (cc << CONTROL_CODE_BITSHIFT) + (((x_sign)?1:0) << X_SIGN_BITSHIFT) + (x << X_BITSHIFT) + (((y_sign)?1:0) << Y_SIGN_BITSHIFT) + (y << Y_BITSHIFT)
+    ((cc << CONTROL_CODE_BITSHIFT) + (((x_sign)?1:0) << X_SIGN_BITSHIFT) + (x << X_BITSHIFT) + (((y_sign)?1:0) << Y_SIGN_BITSHIFT) + (y << Y_BITSHIFT)).to_s 16
   end
 
   def self.run(piston, *args)

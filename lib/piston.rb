@@ -185,7 +185,6 @@ class Piston
     @i = []
   end
 
-  # TODO: CLONE NEEDS FIX WTF!
   def clone
     new_piston = Piston.new(parent, position_x, position_y, direction)
     new_piston.instance_variable_set("@memory", @memory.clone)
@@ -241,14 +240,14 @@ class Piston
   def turn_right
     index = DIRECTIONS.index(direction) + 1
     index = 0 if index >= DIRECTIONS.length
-    change_direction(index)
+    change_direction(DIRECTIONS[index])
   end
 
   # turns the piston right
   def turn_left
     index = DIRECTIONS.index(direction) - 1
     index = DIRECTIONS.length-1 if index < 0
-    change_direction(index)
+    change_direction(DIRECTIONS[index])
   end
 
   # reverses the piston

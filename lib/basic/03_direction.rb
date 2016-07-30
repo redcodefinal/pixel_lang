@@ -21,7 +21,7 @@ class Direction < Instruction
 
   def self.make_color(*args)
     direction = Piston::DIRECTIONS.index(args.first)
-    (cc << CONTROL_CODE_BITSHIFT) + direction
+    ((cc << CONTROL_CODE_BITSHIFT) + direction).to_s 16
   end
 
   def self.run(piston, *args)
