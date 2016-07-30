@@ -53,7 +53,7 @@ class Engine
 
     @log = Logger.new(File.new(File.dirname(__FILE__) + '/../log/' + name + '.log', 'w'))
     log.info "#{name} has reset! Runs: #{runs}"
-    log.level = Logger::DEBUG
+    log.level = Logger::ERROR
 
     @instructions.start_points.each do |sp|
       @pistons << Piston.new(self, sp.x, sp.y, sp.p.direction)

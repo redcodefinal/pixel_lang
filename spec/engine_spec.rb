@@ -32,6 +32,28 @@ describe 'Engine Tests' do
     expect(a_to_z.output).to eq "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   end
 
+  it 'should run is_prime' do
+    engine = Engine.new 'programs/math/is_prime.bmp', "5"
+    engine.run
+    expect(engine.output).to eq "T"
+
+    engine = Engine.new 'programs/math/is_prime.bmp', "11"
+    engine.run
+    expect(engine.output).to eq "T"
+
+    engine = Engine.new 'programs/math/is_prime.bmp', "10"
+    engine.run
+    expect(engine.output).to eq "F"
+
+    engine = Engine.new 'programs/math/is_prime.bmp', "13195"
+    engine.run
+    expect(engine.output).to eq "F"
+
+    engine = Engine.new 'programs/math/is_prime.bmp', "541"
+    engine.run
+    expect(engine.output).to eq "T"
+  end
+
   it 'should run fibonacci' do
     engine = Engine.new 'programs/math/fibonacci.bmp', "9"
     engine.run
@@ -71,6 +93,13 @@ describe 'Engine Tests' do
 
     expect(engine.memory[max]).to eq 44
     expect(engine.output).to eq "44"
+
+    max = 3000
+    engine = Engine.new 'programs/project_euler/2/solution.bmp', max.to_s
+    engine.run
+
+    expect(engine.memory[max]).to eq 3382
+    expect(engine.output).to eq "3382"
   end
 
   it 'should run project_euler 3' do

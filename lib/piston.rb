@@ -41,10 +41,11 @@ class Piston
   # The I register can also be written to, to be used as a stack. The stack is piston local and does not append the input.
   # The O register kind of works the opposite. 
   # When O is written to (is the destination) it writes to the output buffer. You can control whether it writes as a char, int, hex int, hex char.
-  # If O is the/a source it will give back the last 20-bits that was given to it. 
+  # If O is the/a source it will give back the last 20-bits that was given to it.
+  #TODO:  WRITE ABOUT SPECIAL RANDOM REGISTER OPTIONS
   SPECIAL_REG = REGISTERS[6..7]
   # Input options for register I
-  INPUT_OPTIONS = [:int, :char]
+  INPUT_OPTIONS = [:int, :char, :random_int, :random_char]
   # Output options for register O
   OUTPUT_OPTIONS =  [:int, :char, :int_hex, :char_hex]
   # Maximum number allowed (20-bits)
@@ -113,17 +114,19 @@ class Piston
   end
 
   def i(*options)
+    options[0] = 0 if options.first.nil?
     code = INPUT_OPTIONS[options.first]
     #if we put a number on the stack
-    unless @i.empty?
-      i = @i.pop
-
-      #TODO: Add non-pop versions of :int and :char
+    if @i.empty?
       return case code
         when :int
-          i
+          parent.grab_input_number
         when :char
-          i %= 0x100
+          parent.grab_input_char
+         when :random_int
+           rand MAX_INTEGER
+         when :random_char
+           rand 0x100
         else
           fail
       end
@@ -131,26 +134,46 @@ class Piston
 
     case code
       when :int
-        parent.grab_input_number
+        @i.pop
       when :char
-        parent.grab_input_char
+        @i.pop % 0x100
+      when :random_int
+        rand MAX_INTEGER
+      when :random_char
+        rand 0x100
       else
         fail
     end
   end
 
   def set_i(v, *options)
-    @i << v
+    code = INPUT_OPTIONS[options.first]
+
+    case code
+      when :int
+        @i << v
+      when :char
+        @i << v % 0x100
+      when :random_int
+        @i << (rand MAX_INTEGER)
+      when :random_char
+        @i << rand(v)
+      else
+        fail
+    end
   end
 
   def o(*options)
-    # TODO: Add fix if no options for i and o
     code = INPUT_OPTIONS[options.first]
     case code
       when :int
         @o
       when :char
         @o % 0x100
+      when :random_int
+        rand MAX_INTEGER
+      when :random_char
+        rand 0x100
       else
         fail
     end
@@ -197,35 +220,36 @@ class Piston
 
   # runs a single instruction and moves
   def run_one_instruction
+
+    #Wait if paused
     if paused
       @paused_counter -= 1
-      parent.log.debug "^  T#{id} C:#{parent.cycles} is paused for #{@paused_counter} cycles"
       if @paused_counter <= 0
-        parent.log.debug "^  T#{id} is unpaused"
         unpause
       end
       return
     end
 
+    #wrap the reader around if it moves off screen.
+    if position_x < 0
+      @position_x = parent.instructions.width - (position_x.abs % parent.instructions.width)
+    else
+      @position_x %= parent.instructions.width
+    end
+
+    if position_y < 0
+      @position_y = parent.instructions.height - (position_y.abs % parent.instructions.height)
+    else
+      @position_y %= parent.instructions.height
+    end
+
     instruction = parent.instructions.get_instruction(position_x, position_y)
+
     unless instruction
       fail "AT POSITION #{position_x}   #{position_y}"
     end
-    parent.log.info "T#{id} C:#{parent.cycles} Running #{instruction.class} @ #{position_x}, #{position_y} CV: #{instruction.cv.to_s 16}"
+
     instruction.run(self)
-    parent.log.debug '^  Piston state:'
-    parent.log.debug "^     d:#{direction}"
-    parent.log.debug "^     ma:#{ma.to_s 16}"
-    parent.log.debug "^     mav:#{mav.to_s 16}"
-    parent.log.debug "^     mb:#{mb.to_s 16}"
-    parent.log.debug "^     mbv:#{mbv.to_s 16}"
-    parent.log.debug "^     s:#{s.to_s 16}"
-    parent.log.debug "^     sv:#{sv.to_s 16}"
-    parent.log.debug "^     i:#{@i.inject("") {|s ,a| s += a.to_s(16)}}"
-    parent.log.debug '^  Machine state:'
-    parent.log.debug "^     static: #{parent.memory}"
-    parent.log.debug "^     output: #{parent.output}"
-    parent.log.debug "^     input: #{parent.input}"
 
     #move unless we called here recently.
     move 1 unless instruction.class == Call

@@ -27,7 +27,7 @@ class Insert < Instruction
   end
 
   def self.run(piston, *args)
-    piston.set_i args[0]
+    piston.set_i args[0], 0
   end
 
   def run(piston)

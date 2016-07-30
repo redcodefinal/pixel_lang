@@ -66,19 +66,46 @@ class Meta < Instruction
 
   def self.reference_card
     puts %q{
-    End Instruction
-    Ends the piston
+    Meta Instruction
+    Provides an interface for metaprogramming.
 
-    0bCCCCMMOOOWWW11XXX22YYY33
+    0bCCCCMMOOOAAAAAAAAAAAAAAA
     C = Control Code (Instruction)    [4 bits]
     M = Meta Command                  [2 bits]
     O = Meta Command Options          [3 bits]
+    A = Meta Command Arguments        [15 bits]
+
+    --Get
+    Gets the instruction at Coord Register and
+    places the color in Control Code Register and
+    Color Value Register.
+
+    0bWWW11XXX22YYY33
     W = Control Code Register         [3 bits]
     1 = Control Code Register Options [2 bits]
     Z = Color Value Register          [3 bits]
     2 = Color Value Register Options  [2 bits]
     X = Coord Register                [3 bits]
     3 = Coord Register Options        [2 bits]
+
+    --Set
+    Sets the instruction at Coord Register to
+    Control Code Register and Color Value Register.
+
+    0bWWW11XXX22YYY33
+    W = Control Code Register         [3 bits]
+    1 = Control Code Register Options [2 bits]
+    Z = Color Value Register          [3 bits]
+    2 = Color Value Register Options  [2 bits]
+    X = Coord Register                [3 bits]
+    3 = Coord Register Options        [2 bits]
+
+    --Save
+    Saves the current instructions to an image
+    with the file name piston_id-cycle.bmp
+
+    0b000000000000000
+    0 = Control Code Register         [15 bits]
     }
   end
 
@@ -120,27 +147,42 @@ class Meta < Instruction
   def self.run(piston, *args)
     meta_command = args[0]
     meta_command_options = args[1]
-    control_code_register = args[2]
-    control_code_register_options = args[3]
-    color_value_register = args[4]
-    color_value_register_options = args[5]
-    coord_register = args[6]
-    coord_register_options = args[7]
 
-    meta_x = -1
-    meta_y = -1
+    if meta_command == :get || meta_command == :set
+      control_code_register = args[2]
+      control_code_register_options = args[3]
+      color_value_register = args[4]
+      color_value_register_options = args[5]
+      coord_register = args[6]
+      coord_register_options = args[7]
 
-    meta_coord_value = piston.send(coord_register, coord_register_options)
-    if meta_command_options == :absolute
-      coords = get_abs_coord(meta_coord_value)
-      meta_x = coords.first
-      meta_y = coords.last
-    elsif meta_command_options == :relative
-      coords = get_rel_coord(meta_coord_value)
-      meta_x = piston.position_x + coords.first
-      meta_y = piston.position_y + coords.last
-    else
-      fail
+      meta_x = -1
+      meta_y = -1
+
+      meta_coord_value = piston.send(coord_register, coord_register_options)
+      if meta_command_options == :absolute
+        coords = get_abs_coord(meta_coord_value)
+        meta_x = coords.first
+        meta_y = coords.last
+      elsif meta_command_options == :relative
+        coords = get_rel_coord(meta_coord_value)
+        meta_x = piston.position_x + coords.first
+        meta_y = piston.position_y + coords.last
+
+        if meta_x < 0
+          meta_x= parent.instructions.width - (meta_x.abs % parent.instructions.width)
+        else
+          meta_x %= parent.instructions.width
+        end
+
+        if meta_y < 0
+          meta_y = parent.instructions.height - (meta_y.abs % parent.instructions.height)
+        else
+          meta_y %= parent.instructions.height
+        end
+      else
+        fail
+      end
     end
 
     if meta_command == :get
@@ -156,6 +198,9 @@ class Meta < Instruction
       meta_color = meta_control_code + meta_color_value
       #TODO: Write proper out of bounds check
       piston.parent.set_instruction(meta_color, meta_x, meta_y)
+    elsif meta_command == :save
+      # TODO:  Implement proper save
+      # TODO: Implement save scaling
     end
   end
 

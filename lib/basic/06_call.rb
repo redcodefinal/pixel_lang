@@ -7,15 +7,15 @@ class Call < Instruction
 
   X_SIGN_BITS = 1
   X_SIGN_BITMASK = 0x80000
-  X_SIGN_BITSHIFT = 18
+  X_SIGN_BITSHIFT = 19
 
   X_BITS = 9
-  X_BITMASK = 0x7fc000
-  X_BITSHIFT = 9
+  X_BITMASK = 0x7fc00
+  X_BITSHIFT = 10
 
   Y_SIGN_BITS = 1
   Y_SIGN_BITMASK = 0x200
-  Y_SIGN_BITSHIFT = 8
+  Y_SIGN_BITSHIFT = 9
 
   Y_BITS = 9
   Y_BITMASK = 0x1ff
@@ -40,13 +40,15 @@ class Call < Instruction
     x = args.first
     y = args.last
 
-    x_sign = x < 0
-    y_sign = y < 0
+    x_sign = ((x < 0) ? 1 : 0)
+    y_sign = ((y < 0) ? 1 : 0)
 
     x = x.abs
     y = y.abs
 
-    ((cc << CONTROL_CODE_BITSHIFT) + (((x_sign)?1:0) << X_SIGN_BITSHIFT) + (x << X_BITSHIFT) + (((y_sign)?1:0) << Y_SIGN_BITSHIFT) + (y << Y_BITSHIFT)).to_s 16
+    ((cc << CONTROL_CODE_BITSHIFT) +
+      (x_sign << X_SIGN_BITSHIFT) + (x << X_BITSHIFT) +
+      (y_sign << Y_SIGN_BITSHIFT) + (y << Y_BITSHIFT)).to_s 16
   end
 
   def self.run(piston, *args)
@@ -55,19 +57,19 @@ class Call < Instruction
 
 
   def x_sign
-    cv>>X_SIGN_BITSHIFT
+    (cv & X_SIGN_BITMASK) >> X_SIGN_BITSHIFT
   end
 
   def xi
-    (cv & X_BITMASK)>>X_BITSHIFT
+    (cv & X_BITMASK) >> X_BITSHIFT
   end
 
   def y_sign
-    (cv & Y_SIGN_BITMASK)>>Y_SIGN_BITSHIFT
+    (cv & Y_SIGN_BITMASK) >> Y_SIGN_BITSHIFT
   end
 
   def yi
-    cv & Y_BITMASK
+    (cv & Y_BITMASK) >> Y_BITSHIFT
   end
 
   def x

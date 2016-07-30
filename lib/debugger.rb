@@ -34,7 +34,7 @@ class Debugger
   # TODO: Add coloring options
   def show_instructions(**options)
     default_options = {
-      colorized: :none,
+      colorized: :std,
     }
 
     default_options.merge! options
@@ -51,9 +51,35 @@ class Debugger
       engine.instructions.height.times do |y|
         engine.instructions.width.times do |x|
           if engine.pistons.any? {|p| p.position_x == x and p.position_y == y}
-            print pastel.red(engine.instructions[x][y].class.char)
+            if engine.instructions[x][y].class == Direction
+              case engine.instructions[x][y].direction
+                when :left
+                  print pastel.red("<")
+                when :right
+                  print pastel.red(">")
+                when :up
+                  print pastel.red("^")
+                when :down
+                  print pastel.red("v")
+              end
+            else
+              print pastel.red(engine.instructions[x][y].class.char)
+            end
           else
-            print engine.instructions[x][y].class.char
+            if engine.instructions[x][y].class == Direction
+              case engine.instructions[x][y].direction
+                when :left
+                  print pastel.white("<")
+                when :right
+                  print pastel.white(">")
+                when :up
+                  print pastel.white("^")
+                when :down
+                  print pastel.white("v")
+              end
+            else
+              print pastel.white(engine.instructions[x][y].class.char)
+            end
           end
         end
         print "\n"
@@ -96,26 +122,30 @@ class Debugger
     nil
   end
 
+  def show_piston(id, **options)
+    piston = get_piston id
+    registers_data = []
+    registers_data << ["id", piston.id]
+    registers_data << ["x", piston.position_x]
+    registers_data << ["y", piston.position_y]
+    registers_data << ['-', '-']
+
+
+    Piston::REGULAR_REG.each do |register|
+      registers_data << [register, piston.send(register)]
+    end
+
+    Piston::SPECIAL_REG.each do |register|
+      registers_data << [register, piston.instance_variable_get(?@ + register.to_s)]
+    end
+
+    table = TTY::Table.new header: ['register', 'value'], rows: registers_data
+    puts table.render(:ascii)
+  end
+
   def show_pistons(**options)
-
     engine.pistons.each do |piston|
-      registers_data = []
-      registers_data << ["id", piston.id]
-      registers_data << ["x", piston.position_x]
-      registers_data << ["y", piston.position_y]
-      registers_data << ['-', '-']
-
-
-      Piston::REGULAR_REG.each do |register|
-        registers_data << [register, piston.send(register)]
-      end
-
-      Piston::SPECIAL_REG.each do |register|
-        registers_data << [register, piston.instance_variable_get(?@ + register.to_s)]
-      end
-
-      table = TTY::Table.new header: ['register', 'value'], rows: registers_data
-      puts table.render(:ascii)
+      show_piston piston.id
     end
 
     nil
