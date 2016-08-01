@@ -54,6 +54,20 @@ describe 'Engine Tests' do
     expect(engine.output).to eq "T"
   end
 
+  it 'should run factorial' do
+    engine = Engine.new 'programs/math/factorial.bmp', "5"
+    engine.run
+    expect(engine.output).to eq "120"
+
+    engine = Engine.new 'programs/math/factorial.bmp', "6"
+    engine.run
+    expect(engine.output).to eq "720"
+
+    engine = Engine.new 'programs/math/factorial.bmp', "7"
+    engine.run
+    expect(engine.output).to eq "5040"
+  end
+
   it 'should run fibonacci' do
     engine = Engine.new 'programs/math/fibonacci.bmp', "9"
     engine.run
