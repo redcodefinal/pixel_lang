@@ -33,7 +33,7 @@ class Engine
   attr_reader :input
 
   def initialize(image_file, input = '')
-    @original_input = input
+    @original_input = input.clone
     @name = image_file.split('/').last.split('.').first
     @runs = 0
     @instructions = Instructions.new image_file
@@ -49,7 +49,7 @@ class Engine
     @id = 0
     @memory = {}
     @memory.default = 0
-    @input = @original_input
+    @input = @original_input.clone
 
     @log = Logger.new(File.new(File.dirname(__FILE__) + '/../log/' + name + '.log', 'w'))
     log.info "#{name} has reset! Runs: #{runs}"
@@ -63,7 +63,7 @@ class Engine
 
   # runs until all pistons are killed
   def run
-    run_one_instruction while pistons.length > 0
+    run_one_instruction until ended?
   end
 
   # runs a single instruction on all pistons
@@ -122,7 +122,7 @@ class Engine
     i = ''
     while input.length != 0 and ('0'..'9').include?(input[0])
       # TODO: Do we need the extra ''?
-      i << '' << @input.slice!(0)
+      i << @input.slice!(0)
     end
     i.to_i % Piston::MAX_INTEGER
   end

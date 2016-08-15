@@ -47,7 +47,7 @@ class Arithmetic < Instruction
     X = Source Options [2 bits]
     O = Operation [4 bits]
     2 = Source 2 [3 bits]
-    Y = Source Options [2 bits
+    Y = Source Options [2 bits]
     D = Destination [3 bits]
     Z = Destination Options [2 bits]
     0 = Free bit [1 bit]
