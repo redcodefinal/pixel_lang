@@ -9,3 +9,8 @@ pixel\_lang reads in 24-bit bitmaps and turns each pixel into an instruction. Th
 
 ## Holy shit thats complicated
 Yeah, it ain't easy but it is rewarding. Luckily you aren't toally up shit creek without a paddle. There is a debugger that can help you debug your program, logs to help you, and the system will even help you make your colors! 
+
+## Getting started
+Install the dependencies in the GemFile (this included ImageMagick which needs to be installed)
+Build and install the gem from source. (One day I'll release this public but right now I have so much to fix :< )
+Go read the wiki (which i still need to write.)
