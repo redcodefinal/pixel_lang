@@ -46,7 +46,7 @@ class Instruction
     end
 
     def match(color)
-      ((color.value & CONTROL_CODE_BITMASK) >> CONTROL_CODE_BITSHIFT)  == @cc
+      ((color.value & CONTROL_CODE_BITMASK) >> CONTROL_CODE_BITSHIFT) == @cc
     end
 
     def run(piston, *args)

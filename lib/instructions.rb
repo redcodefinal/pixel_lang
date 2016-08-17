@@ -37,6 +37,10 @@ class Instructions
       instruction = get_instruction(color)
       instruction.run(piston)
     end
+
+    def count
+      @instructions.count
+    end
   end
 
   # internal 2d array of read instructions
@@ -80,7 +84,7 @@ class Instructions
     end
 
     # sort the array by priority
-    @start_points.sort! { |l, r| l.p.cv <=> r.p.cv }
+    @start_points.sort! { |l, r| l.p.priority <=> r.p.priority }
   end
 
   def [] index
