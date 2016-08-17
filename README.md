@@ -12,5 +12,7 @@ Yeah, it ain't easy but it is rewarding. Luckily you aren't toally up shit creek
 
 ## Getting started
 Install the dependencies in the GemFile (this included ImageMagick which needs to be installed)
+
 Build and install the gem from source. (One day I'll release this public but right now I have so much to fix :< )
+
 Go read the wiki (which i still need to write.)
