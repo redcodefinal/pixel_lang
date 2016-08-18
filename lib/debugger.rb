@@ -91,9 +91,9 @@ class Debugger
 
   # shows the legend for show_instructions
   def show_legend(**options)
-    int = Instructions.instructions.sort { |a, b| a.cc <=> b.cc}
+    int = Instructions.instructions.sort { |a, b| (a.cc || "#{a.cc + "." + a.mc}".to_f) <=> (b.cc || "#{b.cc + "." + b.mc}".to_f)}
     int.map! do |i|
-      [i.cc, i.to_s]
+      (i.respond_to? :mc) ? ["#{i.cc.to_s << "." << i.mc.to_s}".to_f, i.to_s] : [i.cc, i.to_s]
     end
     table = TTY::Table.new header: ['cc', 'name'], rows: int
     puts table.render(:ascii)

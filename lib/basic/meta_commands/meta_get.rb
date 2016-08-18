@@ -1,4 +1,7 @@
 class MetaGet < Meta
+  set_cc 0xC
+  set_char ?*
+
   set_mc 0
 
   COORD_OPTIONS = [:relative, :absolute]
@@ -135,6 +138,24 @@ class MetaGet < Meta
         fail "Coord options not right"
     end
     [meta_x, meta_y]
+  end
+
+  def self.make_color(coord_options,
+                 control_code_register, control_code_register_options,
+                 color_value_register, color_value_register_options,
+                 coord_register, coord_register_options)
+
+    coord_options = COORD_OPTIONS.index(coord_options) << COORD_OPTIONS_BITSHIFT
+    control_code_register = Piston::REGISTERS.index(control_code_register) << CONTROL_CODE_REGISTER_BITSHIFT
+    control_code_register_options <<= CONTROL_CODE_REGISTER_OPTIONS_BITSHIFT
+    color_value_register = Piston::REGISTERS.index(color_value_register) << COLOR_VALUE_REGISTER_BITSHIFT
+    color_value_register_options <<= COLOR_VALUE_REGISTER_OPTIONS_BITSHIFT
+    coord_register = Piston::REGISTERS.index(coord_register) << COORD_REGISTER_BITSHIFT
+    coord_register_options <<= COORD_REGISTER_OPTIONS_BITSHIFT
+
+    ((cc << CONTROL_CODE_BITSHIFT) + coord_options + control_code_register + control_code_register_options+
+        color_value_register + color_value_register_options +
+        coord_register + coord_register_options).to_s 16
   end
 
   def self.run(piston, *args)

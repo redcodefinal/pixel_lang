@@ -1,4 +1,7 @@
 class MetaSet < MetaGet
+  set_cc 0xC
+  set_char ?*
+
   set_mc 1
 
   def self.reference_card

@@ -1,4 +1,7 @@
 class MetaRandom < Meta
+  set_cc 0xC
+  set_char ?*
+
   set_mc 3
 
   def self.reference_card
@@ -22,7 +25,7 @@ class MetaRandom < Meta
             1 = Random char (0-0x100)
             2 = Random printable (a-zA-Z0-9[symbols])
             3 = Random direction (Gives the piston a random direction to go in)
-                - Ignores R an O args
+                - Ignores R and O args
       R = Register
           - Register to input random value into
       O = Register options

@@ -1,5 +1,16 @@
 class MetaSave < Meta
+  SCALES = [1, 2, 4, 8]
+  ROTATIONS = [0, 90, 180, 270]
+
+  set_cc 0xC
+  set_char ?*
+
   set_mc 2
+
+  def self.make_color(scale, bw, r, g, b, rotation)
+    scale = SCALES.index scale
+    rotation = ROTATIONS.index rotation
+  end
 
   def self.reference_card
     puts %q{
