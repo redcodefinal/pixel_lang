@@ -36,7 +36,7 @@ class Call < Instruction
   end
 
   def self.make_color(*args)
-    #TODO: Write proper out of bounds check
+
     x = args.first
     y = args.last
 

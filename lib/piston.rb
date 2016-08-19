@@ -43,6 +43,7 @@ class Piston
   # When O is written to (is the destination) it writes to the output buffer. You can control whether it writes as a char, int, hex int, hex char.
   # If O is the/a source it will give back the last 20-bits that was given to it.
   #TODO:  WRITE ABOUT SPECIAL RANDOM REGISTER OPTIONS
+  #TODO: Replace random_int and random_char with non-pop versions
   SPECIAL_REG = REGISTERS[6..7]
   # Input options for register I
   INPUT_OPTIONS = [:int, :char, :random_int, :random_char]
@@ -64,6 +65,8 @@ class Piston
 
     reset
   end
+
+  # TODO: Add randomization options to regular
 
   def ma(*options)
     @ma
@@ -220,7 +223,6 @@ class Piston
 
   # runs a single instruction and moves
   def run_one_instruction
-
     #Wait if paused
     if paused
       @paused_counter -= 1

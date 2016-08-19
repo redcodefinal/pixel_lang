@@ -2,6 +2,7 @@ require_relative './../instruction'
 require_relative './../piston'
 
 # TODO: Explain and test swap and reverse.
+# TODO: Change swap and reverse to be Move options not register options
 class Move < Instruction
   set_cc 9
   set_char ?M

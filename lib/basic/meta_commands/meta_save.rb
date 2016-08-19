@@ -26,7 +26,7 @@ class MetaSave < Meta
       Saves the current instructions to an image
       with the file name piston_id-cycle.bmp
 
-      0bSSWRGBA00000000
+      0bSSWRGBABXXX11YYY11
       S = Scale
           - Scales the output image by (1x, 2x, 4x, 8x)
       W = Black and White
@@ -41,7 +41,13 @@ class MetaSave < Meta
           - Allow Green channel
       A = Rotation
           - Rotates the image (0, 90, 180, 270)
-      0 = Free bits       [15 bits]
+      B = Range
+      X = Range Start Register
+      1 = Range Start Register Options
+      Y = Range End Register
+      2 = Range End Options
     }
   end
+
+  #TODO: Finish save
 end

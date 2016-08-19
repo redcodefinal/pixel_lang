@@ -31,4 +31,6 @@ class MetaRandom < Meta
       O = Register options
     }
   end
+
+  #TODO: Finish random
 end

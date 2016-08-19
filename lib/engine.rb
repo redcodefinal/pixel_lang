@@ -121,7 +121,6 @@ class Engine
     # ''.to_i is equal to 0
     i = ''
     while input.length != 0 and ('0'..'9').include?(input[0])
-      # TODO: Do we need the extra ''?
       i << @input.slice!(0)
     end
     i.to_i % Piston::MAX_INTEGER

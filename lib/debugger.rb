@@ -16,7 +16,7 @@ class Debugger
 
   # go to the previous cycle
   def previous
-
+    #TODO: Add cycle tracking to enable previous
   end
 
   def restart
@@ -152,7 +152,7 @@ class Debugger
   end
 
   def show_changes
-
+    #TODO: Show changes
   end
 
   # gets an instruction from the engine and displays information about it
@@ -166,7 +166,6 @@ class Debugger
   end
 
   # peeks at a threads register
-  # TODO: Think about special case i! @i.is_a? Array == true
   def peek_piston_register(piston_id, register)
     piston = get_piston piston_id
 
@@ -178,16 +177,22 @@ class Debugger
   end
 
   #peeks at a threads memory address
-  # TODO: Support ranges
   def peek_memory(piston_id, address)
     piston = get_piston piston_id
 
     piston.memory[address]
   end
 
+  def peek_memory_range(piston_id, range)
+    #TODO: Support ranges
+  end
+
   #peeks at a static memory address
-  # TODO: Support ranges
   def peek_static_memory(address)
     engine.memory[address]
+  end
+
+  def peek_static_memory_range(range)
+    #TODO: Support ranges
   end
 end
