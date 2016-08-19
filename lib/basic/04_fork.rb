@@ -3,8 +3,7 @@ require_relative './../piston'
 
 class Fork < Instruction
   # kinds of pipes UpRightDown DownLeftRight etc.
-  # TYPES TO ADD
-  # :r_urd, :r_dlr, :r_uld, :r_ulr, :r_ulrd
+  # TODO: TYPES TO ADD :r_urd, :r_dlr, :r_uld, :r_ulr, :r_ulrd
   TYPES = [:urd, :dlr, :uld, :ulr, :ulrd]
 
   set_cc 4

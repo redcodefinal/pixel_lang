@@ -17,10 +17,8 @@ class Insert < Instruction
   end
 
   def self.make_color(*args)
-    cv = 0x00000
-
     unless args.first.nil?
-      cv = args.first % Piston::MAX_INTEGER
+      cv = args.first.abs % Piston::MAX_INTEGER
     end
 
     ((cc << CONTROL_CODE_BITSHIFT) + cv).to_s 16

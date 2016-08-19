@@ -111,6 +111,18 @@ class Engine
     @to_merge.clear
   end
 
+  #TODO: Add io modes (allow write_output and grab_input_* to talk directly with terminal)
+  # Modes:
+  #    INPUT:
+  #      Stream - Read Input in from the terminal
+  #               May require a terminal client to be built
+  #      String
+  #      File
+  #    OUTPUT:
+  #      Stream
+  #      String
+  #      File
+
   # writes to the output
   def write_output(string)
     @output << string.to_s

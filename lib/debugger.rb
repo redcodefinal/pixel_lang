@@ -184,7 +184,15 @@ class Debugger
   end
 
   def peek_memory_range(piston_id, range)
-    #TODO: Support ranges
+    piston = get_piston piston_id
+
+    memory_table = []
+    range.each do |address|
+      memory_table << [address, piston.memory[address]]
+    end
+
+    table = TTY::Table.new header: ['address', 'value'], rows: memory_table
+    puts table.render(:ascii)
   end
 
   #peeks at a static memory address
@@ -193,6 +201,12 @@ class Debugger
   end
 
   def peek_static_memory_range(range)
-    #TODO: Support ranges
+    memory_table = []
+    range.each do |address|
+      memory_table << [address, engine.memory[address]]
+    end
+
+    table = TTY::Table.new header: ['address', 'value'], rows: memory_table
+    puts table.render(:ascii)
   end
 end

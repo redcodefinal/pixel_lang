@@ -66,7 +66,12 @@ class Piston
     reset
   end
 
-  # TODO: Add randomization options to regular
+  # TODO: Add better options to regular registers
+  # New options should be
+  #   :none - do nothing
+  #   :random_number_max - uses the value of the register for rand
+  #   :random_number - just pulls a random number with Piston::MAX_INTEGER as the max
+  #   :
 
   def ma(*options)
     @ma
@@ -217,6 +222,7 @@ class Piston
     new_piston.instance_variable_set("@ma", @ma)
     new_piston.instance_variable_set("@mb", @mb)
     new_piston.instance_variable_set("@s", @s)
+    new_piston.instance_variable_set("@o", @o)
     new_piston.instance_variable_set("@i", @i.clone)
     new_piston
   end
@@ -253,7 +259,7 @@ class Piston
 
     instruction.run(self)
 
-    #move unless we called here recently.
+    #move unless we called recently.
     move 1 unless instruction.class == Call
   end
 

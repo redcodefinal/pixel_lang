@@ -5,6 +5,20 @@ class Conditional < Instruction
            :pass_through, :gate, :turn_left, :turn_right,
            :straight_or_left, :straight_or_right]
 
+  # Metric ass ton of procs efining how to piston (p) should move
+  DIRECTIONS = {
+      vertical: [-> p { p.change_direction :up }, -> p { p.change_direction :down }],
+      reverse_vertical: [-> p { p.change_direction :down }, -> p { p.change_direction :up }],
+      horizontal: [-> p { p.change_direction :left }, -> p { p.change_direction :right }],
+      reverse_horizontal: [-> p { p.change_direction :right }, -> p { p.change_direction :left }],
+      pass_through: [-> p { }, -> p { p.reverse }],
+      gate: [-> p { p.reverse }, -> p { }],
+      turn_left: [-> p { p.turn_right }, -> p { p.turn_left }],
+      turn_right: [-> p { p.turn_left }, -> p { p.turn_right }],
+      straight_or_left: [-> p { p.turn_left }, -> p { }],
+      straight_or_right: [-> p { p.turn_right }, -> p { }],
+  }
+
   set_cc 7
   set_char ?C
 
@@ -78,55 +92,9 @@ class Conditional < Instruction
     result = v1.send(op, v2)
 
     if result == LOGICAL_FALSE || !result
-      case type
-        when :vertical
-          piston.change_direction :up
-        when :reverse_vertical
-          piston.change_direction :down
-        when :horizontal
-          piston.change_direction :left
-        when :reverse_horizontal
-          piston.change_direction :right
-        when :pass_through
-          #do nothing
-        when :gate
-          piston.reverse
-        when :turn_left
-          piston.turn_right
-        when :turn_right
-          piston.turn_left
-        when :straight_or_left
-          piston.turn_left
-        when :straight_or_right
-          piston.turn_right
-        else
-          fail
-      end
+      DIRECTIONS[type][0][piston]
     else
-      case type
-        when :vertical
-          piston.change_direction :down
-        when :reverse_vertical
-          piston.change_direction :up
-        when :horizontal
-          piston.change_direction :right
-        when :reverse_horizontal
-          piston.change_direction :left
-        when :pass_through
-          piston.reverse
-        when :gate
-          # do nothing
-        when :turn_left
-          piston.turn_left
-        when :turn_right
-          piston.turn_right
-        when :straight_or_left
-          # do nothing
-        when :straight_or_right
-          # do nothing
-        else
-          fail
-      end
+      DIRECTIONS[type][1][piston]
     end
   end
 
