@@ -32,6 +32,8 @@ class Engine
   # input
   attr_reader :input
 
+  attr_reader :last_output
+
   def initialize(image_file, input = '')
     @original_input = input.clone
     @name = image_file.split('/').last.split('.').first
@@ -50,6 +52,7 @@ class Engine
     @memory = {}
     @memory.default = 0
     @input = @original_input.clone
+    @last_output = 0
 
     @log = Logger.new(File.new(File.dirname(__FILE__) + '/../log/' + name + '.log', 'w'))
     log.info "#{name} has reset! Runs: #{runs}"
@@ -124,8 +127,9 @@ class Engine
   #      File
 
   # writes to the output
-  def write_output(string)
-    @output << string.to_s
+  def write_output(item)
+    @last_output = item
+    @output << item.to_s
   end
 
   # gets a number from input until it hits the end or a non-number char

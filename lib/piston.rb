@@ -41,7 +41,7 @@ class Piston
   # The I register can also be written to, to be used as a stack. The stack is piston local and does not append the input.
   # The O register kind of works the opposite. 
   # When O is written to (is the destination) it writes to the output buffer. You can control whether it writes as a char, int, hex int, hex char.
-  # If O is the/a source it will give back the last 20-bits that was given to it.
+  # If O is the/a source it will give back the last 20-bits that was given to output, this is globally shared between all pistons
   #TODO:  WRITE ABOUT SPECIAL RANDOM REGISTER OPTIONS
   #TODO: Replace random_int and random_char with non-pop versions
   SPECIAL_REG = REGISTERS[6..7]
@@ -49,7 +49,7 @@ class Piston
   INPUT_OPTIONS = [:int, :char, :random_int, :random_char]
   # Output options for register O
   OUTPUT_OPTIONS =  [:int, :char, :int_hex, :char_hex]
-  # Maximum number allowed (20-bits)
+  # Maximum number allowed (20-bits) 2**20
   MAX_INTEGER = 0x100000
 
   def initialize(parent, position_x, position_y, direction)
@@ -175,9 +175,9 @@ class Piston
     code = INPUT_OPTIONS[options.first]
     case code
       when :int
-        @o
+        engine.last_output
       when :char
-        @o % 0x100
+        engine.last_output % 0x100
       when :random_int
         rand MAX_INTEGER
       when :random_char
@@ -189,16 +189,15 @@ class Piston
 
   def set_o(v, *options)
     code = OUTPUT_OPTIONS[options.first]
-    @o = v
     case code
       when :int
-        parent.write_output @o
+        parent.write_output v
       when :char
-        parent.write_output((@o % 0x100).chr)
+        parent.write_output((v % 0x100).chr)
       when :int_hex
-        parent.write_output "0x#{@o.to_s(16).rjust(5, ?0)}"
+        parent.write_output "0x#{v.to_s(16).rjust(5, ?0)}"
       when :char_hex
-        parent.write_output "0x#{(@o%0x100).to_s(16).rjust(2, ?0)}"
+        parent.write_output "0x#{(v % 0x100).to_s(16).rjust(2, ?0)}"
       else
         fail
     end
@@ -222,7 +221,6 @@ class Piston
     new_piston.instance_variable_set("@ma", @ma)
     new_piston.instance_variable_set("@mb", @mb)
     new_piston.instance_variable_set("@s", @s)
-    new_piston.instance_variable_set("@o", @o)
     new_piston.instance_variable_set("@i", @i.clone)
     new_piston
   end

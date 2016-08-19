@@ -5,8 +5,8 @@ class Direction < Instruction
   set_cc 3
   set_char ?D
 
-  DIRECTION_BITS = 4
-  DIRECTION_BITMASK = 0xF
+  DIRECTION_BITS = 3
+  DIRECTION_BITMASK = 0x7
   DIRECTION_BITSHIFT = 0
 
   DIRECTIONS = Piston::DIRECTIONS + [:turn_left, :turn_right, :reverse, :random]

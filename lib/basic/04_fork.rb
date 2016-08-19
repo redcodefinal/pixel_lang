@@ -5,6 +5,66 @@ class Fork < Instruction
   # kinds of pipes UpRightDown DownLeftRight etc.
   # TODO: TYPES TO ADD :r_urd, :r_dlr, :r_uld, :r_ulr, :r_ulrd
   TYPES = [:urd, :dlr, :uld, :ulr, :ulrd]
+  DIRECTIONS = {
+      urd: {
+          up:  -> p { p.parent.fork(p, :right) },
+          left: -> p {
+            p.parent.fork(p, :left)
+            p.turn_right
+          },
+          down: -> p { p.parent.fork(p, :left) },
+          right: -> p { p.reverse }
+      },
+
+      dlr: {
+          up:  -> p {
+            p.parent.fork(p, :left)
+            p.turn_right
+          },
+          left: -> p { p.parent.fork(p, :left) },
+          down: -> p { p.reverse },
+          right: -> p { p.parent.fork(p, :right) }
+      },
+
+      uld: {
+          up:  -> p { p.parent.fork(p, :left) },
+          left: -> p { p.reverse },
+          down: -> p { p.parent.fork(p, :right) },
+          right: -> p {
+            p.parent.fork(p, :left)
+            p.turn_right
+          }
+      },
+
+      ulr: {
+          up:  -> p { p.reverse },
+          left: -> p { p.parent.fork(p, :right) },
+          down: -> p {
+            p.parent.fork(p, :left)
+            p.turn_right
+          },
+          right: -> p { p.parent.fork(p, :left) }
+      },
+
+      ulrd: {
+          up: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+          },
+          left: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+          },
+          down: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+          },
+          right: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+          },
+      },
+  }
 
   set_cc 4
   set_char ?F
@@ -27,83 +87,7 @@ class Fork < Instruction
   end
 
   def self.run(piston, *args)
-    case args[0]
-      when :urd
-        case (piston.direction)
-          when :up
-            piston.parent.fork(piston, :right)
-          when :left
-            piston.parent.fork(piston, :left)
-            piston.turn_right
-          when :down
-            piston.parent.fork(piston, :left)
-          when :right
-            piston.reverse
-          else
-            raise Exception.new
-        end
-      when :dlr
-        case (piston.direction)
-          when :up
-            piston.parent.fork(piston, :left)
-            piston.turn_right
-          when :left
-            piston.parent.fork(piston, :left)
-          when :down
-            thread.reverse
-          when :right
-            piston.parent.fork(piston, :right)
-          else
-            raise Exception.new
-        end
-      when :uld
-        case (piston.direction)
-          when :up
-            piston.parent.fork(piston, :left)
-          when :left
-            piston.reverse
-          when :down
-            piston.parent.fork(piston, :right)
-          when :right
-            piston.parent.fork(piston, :left)
-            piston.turn_right
-          else
-            raise Exception.new
-        end
-      when :ulr
-        case (piston.direction)
-          when :up
-            piston.reverse
-          when :left
-            piston.parent.fork(piston, :right)
-          when :down
-            piston.parent.fork(piston, :left)
-            piston.turn_right
-          when :right
-            piston.parent.fork(piston, :left)
-          else
-            raise Exception.new
-        end
-      when :ulrd
-        case (piston.direction)
-          when :up
-            piston.parent.fork(piston, :right)
-            piston.parent.fork(piston, :left)
-          when :left
-            piston.parent.fork(piston, :right)
-            piston.parent.fork(piston, :left)
-          when :down
-            piston.parent.fork(piston, :right)
-            piston.parent.fork(piston, :left)
-          when :right
-            piston.parent.fork(piston, :right)
-            piston.parent.fork(piston, :left)
-          else
-            raise Exception.new
-        end
-      else
-        fail "FORK TYPE ERROR"
-    end
+    DIRECTIONS[args[0]][piston.direction][piston]
   end
 
   def type
