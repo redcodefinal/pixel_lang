@@ -55,18 +55,14 @@ class Arithmetic < Instruction
   end
 
   def self.make_color(*args)
-    s1 = args[0]
+    s1 = Piston::REGISTERS.index(args[0]) << SOURCE_1_BITSHIFT
     s1op = args[1] << SOURCE_1_OPTIONS_BITSHIFT
-    op = args[2]
-    s2 = args[3]
+    op = Arithmetic::OPERATIONS.index(args[2]) << OPERATIONS_BITSHIFT
+    s2 = Piston::REGISTERS.index(args[3]) << SOURCE_2_BITSHIFT
     s2op = args[4] << SOURCE_2_OPTIONS_BITSHIFT
-    d = args[5]
+    d = Piston::REGISTERS.index(args[5]) << DESTINATION_BITSHIFT
     dop = args[6] << DESTINATION_OPTIONS_BITSHIFT
 
-    s1 = Piston::REGISTERS.index(s1) << SOURCE_1_BITSHIFT
-    op = Arithmetic::OPERATIONS.index(op) << OPERATIONS_BITSHIFT
-    s2 = Piston::REGISTERS.index(s2) << SOURCE_2_BITSHIFT
-    d = Piston::REGISTERS.index(d) << DESTINATION_BITSHIFT
 
     ((cc << CONTROL_CODE_BITSHIFT) + s1 + s1op + op + s2 + s2op + d + dop).to_s 16
   end

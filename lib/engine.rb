@@ -31,7 +31,7 @@ class Engine
   attr_reader :memory
   # input
   attr_reader :input
-
+  # Last number to be written to output
   attr_reader :last_output
 
   def initialize(image_file, input = '')
@@ -102,6 +102,8 @@ class Engine
       new_piston.turn_left
     elsif turn_direction == :right
       new_piston.turn_right
+    elsif turn_direction == :reverse
+      new_piston.reverse
     end
     new_piston.move 1
 
@@ -128,7 +130,15 @@ class Engine
 
   # writes to the output
   def write_output(item)
-    @last_output = item
+    if item.is_a? String
+      if item[1] == 'x'
+        @last_output = item.to_i(16)
+      else
+        @last_output = item.ord
+      end
+    else
+      @last_output = item
+    end
     @output << item.to_s
   end
 

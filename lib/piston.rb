@@ -31,6 +31,9 @@ class Piston
   # Registers S and SV refer to the global memory.
   # All six registers here act the same way, and allow input and output
   REGULAR_REG = REGISTERS[0..5]
+  REGULAR_REG_S_OPTIONS = [:none, :random_max]
+  REGULAR_REG_D_OPTIONS = [:none, :random_max]
+
   # List of the special registers, which have special meaning.
   # Register I is the input register. It allows access to the input buffer in the engine.
   # Register O is the output register. In allows access to the output buffer in the engine.
@@ -46,9 +49,11 @@ class Piston
   #TODO: Replace random_int and random_char with non-pop versions
   SPECIAL_REG = REGISTERS[6..7]
   # Input options for register I
-  INPUT_OPTIONS = [:int, :char, :random_int, :random_char]
+  INPUT_S_OPTIONS = [:int, :char, :no_pop_int, :no_pop_char]
+  INPUT_D_OPTIONS = [:int, :char, :random_max, :random]
+  OUTPUT_S_OPTIONS = [:int, :char, :random_max, :random]
   # Output options for register O
-  OUTPUT_OPTIONS =  [:int, :char, :int_hex, :char_hex]
+  OUTPUT_D_OPTIONS =  [:int, :char, :int_hex, :char_hex]
   # Maximum number allowed (20-bits) 2**20
   MAX_INTEGER = 0x100000
 
@@ -67,63 +72,153 @@ class Piston
   end
 
   # TODO: Add better options to regular registers
-  # New options should be
-  #   :none - do nothing
-  #   :random_number_max - uses the value of the register for rand
-  #   :random_number - just pulls a random number with Piston::MAX_INTEGER as the max
-  #   :
 
   def ma(*options)
-    @ma
+    option = REGULAR_REG_S_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @ma
+      when :random_max
+        rand(@ma)
+      else
+        fail
+    end
   end
 
   def set_ma(v, *options)
-    @ma = v % MAX_INTEGER
+    option = REGULAR_REG_D_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @ma = v % MAX_INTEGER
+      when :random_max
+        @ma = rand(v % MAX_INTEGER)
+      else
+        fail
+    end
   end
 
   def mav(*options)
-    @memory[ma]
+    option = REGULAR_REG_S_OPTIONS[options.first || 0]
+    case option
+      when :none
+        memory[@ma]
+      when :random_max
+        rand(memory[@ma])
+      else
+        fail
+    end
   end
 
   def set_mav(v, *options)
-    @memory[ma] = v % MAX_INTEGER
+    option = REGULAR_REG_D_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @memory[@ma] = v % MAX_INTEGER
+      when :random_max
+        @memory[@ma] = rand(v % MAX_INTEGER)
+      else
+        fail
+    end
   end
 
   def mb(*options)
-    @mb
+    option = REGULAR_REG_S_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @mb
+      when :random_max
+        rand(@mb)
+      else
+        fail
+    end
   end
 
   def set_mb(v, *options)
-    @mb = v % MAX_INTEGER
+    option = REGULAR_REG_D_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @mb = v % MAX_INTEGER
+      when :random_max
+        @mb = rand(v % MAX_INTEGER)
+      else
+        fail
+    end
   end
 
   def mbv(*options)
-    @memory[mb]
+    option = REGULAR_REG_S_OPTIONS[options.first || 0]
+    case option
+      when :none
+        memory[@mb]
+      when :random_max
+        rand(memory[@mb])
+      else
+        fail
+    end
   end
 
   def set_mbv(v, *options)
-    @memory[mb] = v % MAX_INTEGER
+    option = REGULAR_REG_D_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @memory[@mb] = v % MAX_INTEGER
+      when :random_max
+        @memory[@mb] = rand(v % MAX_INTEGER)
+      else
+        fail
+    end
   end
 
   def s(*options)
-    @s
+    option = REGULAR_REG_S_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @s
+      when :random_max
+        rand(@s)
+      else
+        fail
+    end
   end
 
   def set_s(v, *options)
-    @s = v % MAX_INTEGER
+    option = REGULAR_REG_D_OPTIONS[options.first || 0]
+    case option
+      when :none
+        @s = v % MAX_INTEGER
+      when :random_max
+        @s = rand(v % MAX_INTEGER)
+      else
+        fail
+    end
   end
 
   def sv(*options)
-    parent.memory[s]
+    option = REGULAR_REG_S_OPTIONS[options.first || 0]
+    case option
+      when :none
+        parent.memory[@s]
+      when :random_max
+        rand(parent.memory[@s])
+      else
+        fail
+    end
   end
 
   def set_sv(v, *options)
-    parent.memory[s] = v % MAX_INTEGER
+    option = REGULAR_REG_D_OPTIONS[options.first || 0]
+    case option
+      when :none
+        parent.memory[@s] = v % MAX_INTEGER
+      when :random_max
+        parent.memory[@s] = rand(v % MAX_INTEGER)
+      else
+        fail
+    end
   end
 
   def i(*options)
-    options[0] = 0 if options.first.nil?
-    code = INPUT_OPTIONS[options.first]
+    code = INPUT_S_OPTIONS[options.first]
     #if we put a number on the stack
     if @i.empty?
       return case code
@@ -131,10 +226,15 @@ class Piston
           parent.grab_input_number
         when :char
           parent.grab_input_char
-         when :random_int
-           rand MAX_INTEGER
-         when :random_char
-           rand 0x100
+        when :no_pop_int
+          x = 0
+          total = ''
+          while x < engine.input.length and ('0'..'9').include?(engine.input[x])
+            total << engine.input[x]
+          end
+          total.to_i
+        when :no_pop_char
+           parent.input[0]
         else
           fail
       end
@@ -145,26 +245,26 @@ class Piston
         @i.pop
       when :char
         @i.pop % 0x100
-      when :random_int
-        rand MAX_INTEGER
-      when :random_char
-        rand 0x100
+      when :no_pop_int
+        @i.last
+      when :no_pop_char
+        @i.last % 0x100
       else
         fail
     end
   end
 
   def set_i(v, *options)
-    code = INPUT_OPTIONS[options.first]
+    code = INPUT_D_OPTIONS[options.first]
 
     case code
       when :int
         @i << v
       when :char
         @i << v % 0x100
-      when :random_int
-        @i << (rand MAX_INTEGER)
-      when :random_char
+      when :random
+        @i << rand(MAX_INTEGER)
+      when :random_max
         @i << rand(v)
       else
         fail
@@ -172,23 +272,23 @@ class Piston
   end
 
   def o(*options)
-    code = INPUT_OPTIONS[options.first]
+    code = OUTPUT_S_OPTIONS[options.first]
     case code
       when :int
         engine.last_output
       when :char
         engine.last_output % 0x100
-      when :random_int
+      when :random_max
+        rand engine.last_output
+      when :random
         rand MAX_INTEGER
-      when :random_char
-        rand 0x100
       else
         fail
     end
   end
 
   def set_o(v, *options)
-    code = OUTPUT_OPTIONS[options.first]
+    code = OUTPUT_D_OPTIONS[options.first]
     case code
       when :int
         parent.write_output v

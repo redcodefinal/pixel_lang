@@ -64,6 +64,97 @@ class Fork < Instruction
             p.parent.fork(p, :left)
           },
       },
+
+      r_urd: {
+          up:  -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :reverse)
+          },
+          left: -> p {
+            p.parent.fork(p, :left)
+            p.turn_right
+            p.parent.fork(p, :reverse)
+          },
+          down: -> p {
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          },
+          right: -> p { p.reverse }
+      },
+
+      r_dlr: {
+          up:  -> p {
+            p.parent.fork(p, :left)
+            p.turn_right
+            p.parent.fork(p, :reverse)
+          },
+          left: -> p {
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          },
+          down: -> p { p.reverse },
+          right: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :reverse)
+          }
+      },
+
+      r_uld: {
+          up:  -> p {
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          },
+          left: -> p { p.reverse },
+          down: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :reverse)
+          },
+          right: -> p {
+            p.parent.fork(p, :left)
+            p.turn_right
+            p.parent.fork(p, :reverse)
+          }
+      },
+
+      r_ulr: {
+          up:  -> p { p.reverse },
+          left: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :reverse)
+          },
+          down: -> p {
+          p.parent.fork(p, :left)
+          p.turn_right
+          p.parent.fork(p, :reverse)
+          },
+          right: -> p {
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          }
+      },
+
+      r_ulrd: {
+          up: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          },
+          left: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          },
+          down: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          },
+          right: -> p {
+            p.parent.fork(p, :right)
+            p.parent.fork(p, :left)
+            p.parent.fork(p, :reverse)
+          },
+      },
   }
 
   set_cc 4
@@ -87,7 +178,8 @@ class Fork < Instruction
   end
 
   def self.run(piston, *args)
-    DIRECTIONS[args[0]][piston.direction][piston]
+    fork_type = args[0]
+    DIRECTIONS[fork_type][piston.direction][piston]
   end
 
   def type
