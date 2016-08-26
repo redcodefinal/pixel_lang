@@ -11,19 +11,19 @@ class Meta < Instruction
 
     def match(color)
       meta_c = ((color.value & META_COMMAND_BITMASK) >> META_COMMAND_BITSHIFT) == @mc
-      super and meta_c
+      Instruction.match(color) and meta_c
     end
 
     def reference_card
       puts %q{
-    Meta Instruction
-    Provides an interface for metaprogramming.
+        Meta Instruction
+        Provides an interface for metaprogramming.
 
-    0bCCCCMMAAAAAAAAAAAAAAAAAA
-    C = Control Code (Instruction)    [4 bits]
-    M = Meta Command                  [2 bits]
-    A = Meta Command Arguments        [15 bits]
-    }
+        0bCCCCMMAAAAAAAAAAAAAAAAAA
+        C = Control Code (Instruction)    [4 bits]
+        M = Meta Command                  [2 bits]
+        A = Meta Command Arguments        [15 bits]
+        }
     end
   end
 

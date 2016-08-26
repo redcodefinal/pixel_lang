@@ -56,22 +56,7 @@ class Move < Instruction
     swap = args[4]
     reverse = args[5]
 
-
-    if Piston::REGULAR_REG.include? source
-      source_options = Piston::REGULAR_REG_S_OPTIONS.index(source_options)
-    elsif source == :i
-      source_options = Piston::INPUT_S_OPTIONS.index(source_options)
-    elsif source == :o
-      source_options = Piston::OUTPUT_S_OPTIONS.index(source_options)
-    end
     source_options <<= SOURCE_OPTIONS_BITSHIFT
-    if Piston::REGULAR_REG.include? destination
-      destination_options = Piston::REGULAR_REG_D_OPTIONS.index(destination_options)
-    elsif destination == :i
-      destination_options = Piston::INPUT_D_OPTIONS.index(destination_options)
-    elsif destination == :o
-      destination_options = Piston::OUTPUT_D_OPTIONS.index(destination_options)
-    end
     destination_options <<= DESTINATION_OPTIONS_BITSHIFT
 
     source = Piston::REGISTERS.index(source) << SOURCE_BITSHIFT

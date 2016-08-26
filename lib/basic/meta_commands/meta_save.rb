@@ -10,6 +10,10 @@ class MetaSave < Meta
   def self.make_color(scale, bw, r, g, b, rotation)
     scale = SCALES.index scale
     rotation = ROTATIONS.index rotation
+    bw = (bw ? LOGICAL_TRUE : LOGICAL_FALSE)
+    r = (r ? LOGICAL_TRUE : LOGICAL_FALSE)
+    g = (g ? LOGICAL_TRUE : LOGICAL_FALSE)
+    b = (b ? LOGICAL_TRUE : LOGICAL_FALSE)
   end
 
   def self.reference_card

@@ -3,10 +3,11 @@ require_relative './../piston'
 class Conditional < Instruction
   TYPES = [:vertical, :horizontal, :reverse_vertical, :reverse_horizontal,
            :pass_through, :gate, :turn_left, :turn_right,
-           :straight_or_left, :straight_or_right]
+           :straight_or_left, :straight_or_right, :left_or_straight, :right_or_straight]
 
   # Metric ass ton of procs efining how to piston (p) should move
   DIRECTIONS = {
+      # NAME: [FALSE_PROC, TRUE_PROC]
       vertical: [-> p { p.change_direction :up }, -> p { p.change_direction :down }],
       reverse_vertical: [-> p { p.change_direction :down }, -> p { p.change_direction :up }],
       horizontal: [-> p { p.change_direction :left }, -> p { p.change_direction :right }],
@@ -17,6 +18,8 @@ class Conditional < Instruction
       turn_right: [-> p { p.turn_left }, -> p { p.turn_right }],
       straight_or_left: [-> p { p.turn_left }, -> p { }],
       straight_or_right: [-> p { p.turn_right }, -> p { }],
+      left_or_straight: [ -> p { }, -> p { p.turn_left }],
+      right_or_straight: [-> p { }, -> p { p.turn_right }],
   }
 
   set_cc 7

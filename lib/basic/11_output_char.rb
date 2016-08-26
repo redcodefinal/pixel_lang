@@ -1,8 +1,12 @@
 require_relative './../instruction'
 require_relative './../piston'
-class OutputValueAsChar < Instruction
+class OutputChar < Instruction
   set_cc 0xB
   set_char ?O
+
+  def self.make_color(*args)
+    ((cc << CONTROL_CODE_BITSHIFT) + args[0].ord).to_s 16
+  end
 
   def run(piston)
     self.class.run(piston, cv)

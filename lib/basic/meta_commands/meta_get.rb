@@ -58,6 +58,7 @@ class MetaGet < Meta
   COORD_REL_Y_BITMASK = 0x1ff
   COORD_REL_Y_BITSHIFT = 0
 
+  #TODO: fix coord options, there are only two
   def self.reference_card
     puts %q{
     Meta Instruction

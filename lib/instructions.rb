@@ -99,4 +99,8 @@ class Instructions
   def set_instruction(color, x, y)
     @array[x][y] = Instructions.get_instruction(color).new color
   end
+
+  def resize(type, width, height)
+    #todo: write resize
+  end
 end
