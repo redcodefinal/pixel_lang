@@ -116,18 +116,6 @@ class Engine
     @to_merge.clear
   end
 
-  #TODO: Add io modes (allow write_output and grab_input_* to talk directly with terminal)
-  # Modes:
-  #    INPUT:
-  #      Stream - Read Input in from the terminal
-  #               May require a terminal client to be built
-  #      String
-  #      File
-  #    OUTPUT:
-  #      Stream
-  #      String
-  #      File
-
   # writes to the output
   def write_output(item)
     if item.is_a? String
@@ -145,7 +133,7 @@ class Engine
   # gets a number from input until it hits the end or a non-number char
   def grab_input_number
     # ''.to_i is equal to 0
-    i = ''
+    i = '0'
     while input.length != 0 and ('0'..'9').include?(input[0])
       i << @input.slice!(0)
     end

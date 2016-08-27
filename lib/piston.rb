@@ -50,7 +50,7 @@ class Piston
   SPECIAL_REG = REGISTERS[6..7]
   # Input options for register I
   INPUT_S_OPTIONS = [:int, :char, :no_pop_int, :no_pop_char]
-  INPUT_D_OPTIONS = [:int, :char, :random_max, :random]
+  INPUT_D_OPTIONS = [:int, :char, :random_max, :null]
   OUTPUT_S_OPTIONS = [:int, :char, :random_max, :random]
   # Output options for register O
   OUTPUT_D_OPTIONS =  [:int, :char, :int_hex, :char_hex]
@@ -262,8 +262,8 @@ class Piston
         @i << v
       when :char
         @i << v % 0x100
-      when :random
-        @i << rand(MAX_INTEGER)
+      when :null
+        # Throw the value away
       when :random_max
         @i << rand(v)
       else

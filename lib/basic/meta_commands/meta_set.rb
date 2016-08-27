@@ -42,7 +42,7 @@ class MetaSet < MetaGet
     coord_register_options = args[6]
 
 
-    meta_control_code = (piston.send(control_code_register, control_code_register_options) % Instructions.count) << CONTROL_CODE_BITSHIFT
+    meta_control_code = (piston.send(control_code_register, control_code_register_options) % 0x10) << CONTROL_CODE_BITSHIFT
     meta_color_value = piston.send(color_value_register, color_value_register_options)
     meta_x, meta_y = *get_coords(coord_options, piston.send(coord_register, coord_register_options))
 
