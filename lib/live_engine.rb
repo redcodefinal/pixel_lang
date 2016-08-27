@@ -1,8 +1,11 @@
-require './engine'
+require 'io/console'
+require 'io/wait'
+
+require_relative './engine'
 
 class LiveEngine < Engine
   def write_output(item)
-    Kernel.puts item
+    Kernel.print item
     super
   end
 
@@ -11,8 +14,7 @@ class LiveEngine < Engine
 
     if input.length.zero?
       until int and int.to_s =~ /^[0-9]+$/
-        print "#{int.nil? ? '' : ?!}N:"
-        int = Kernel.gets.chomp
+        int = gets("#{int.nil? ? '' : ?!}#:").chomp
       end
     else
       super
@@ -22,10 +24,33 @@ class LiveEngine < Engine
 
   def grab_input_char
     if input.length.zero?
-      print "S:"
-      int = Kernel.gets.chomp
+      int = gets("$:").chomp
       @input << int
     end
     super
+  end
+
+  def gets(prompt)
+    print prompt
+    chars = ""
+
+    until ["\r", "\n", "\r\n", ?\u0003].any?{|c| chars.include?(c)}
+      char = nil
+      while char.nil?
+        char = STDIN.getch
+        if char == ?\u007F
+          char = nil
+          print "\r"
+          (chars.length+prompt.length).times do
+            print " "
+          end
+          print "\r#{prompt}"
+          chars = ""
+        end
+      end
+      chars << char
+      STDOUT.print char
+    end
+    chars
   end
 end
