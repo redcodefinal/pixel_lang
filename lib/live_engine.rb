@@ -34,18 +34,18 @@ class LiveEngine < Engine
     print prompt
     chars = ""
 
-    until ["\r", "\n", "\r\n", ?\u0003].any?{|c| chars.include?(c)}
+    until ["\r", "\n", "\r\n", "\u0003"].any?{|c| chars.include?(c)}
       char = nil
       while char.nil?
         char = STDIN.getch
-        if char == ?\u007F
+        if char == "\u007F"
           char = nil
           print "\r"
-          (chars.length+prompt.length).times do
+          (chars.length+prompt.length+1).times do
             print " "
           end
-          print "\r#{prompt}"
-          chars = ""
+          chars.slice!(chars.length-1)
+          print "\r#{prompt}#{chars}"
         end
       end
       chars << char

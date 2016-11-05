@@ -1,4 +1,4 @@
-class MetaResize < Meta
+class IMetaResize < InstructionMeta
   set_cc 0xC
   set_char ?*
 

@@ -17,6 +17,8 @@ class Piston
   # the identity of the piston, given by the parent machine
   attr_reader :id
 
+  attr_accessor :priority
+
 
   # clockwise list of instructions
   DIRECTIONS = [:up, :right, :down, :left]
@@ -67,6 +69,8 @@ class Piston
     @paused_counter = 0
     @ended = false
     @id = parent.make_id
+
+    @priority = priority
 
     reset
   end
@@ -321,6 +325,8 @@ class Piston
     new_piston.instance_variable_set("@ma", @ma)
     new_piston.instance_variable_set("@mb", @mb)
     new_piston.instance_variable_set("@s", @s)
+    new_piston.instance_variable_set("@priority", @priority)
+
     new_piston.instance_variable_set("@i", @i.clone)
     new_piston
   end
@@ -403,7 +409,7 @@ class Piston
   end
 
   # jumps to a relative position
-  def jump(x, y)
+  def call(x, y)
     @position_x += x
     @position_y += y
   end

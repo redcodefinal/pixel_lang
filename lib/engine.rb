@@ -111,6 +111,14 @@ class Engine
     log.debug "^  piston forked! Id: #{new_piston.id}"
   end
 
+  def priority_changed(piston)
+    #remove the piston
+    @pistons.delete(piston)
+    #find the first piston whose priority is
+    p = @pistons.find {|p| p.priority <= piston.priority}
+    @to_merge << {old_piston: p, new_piston: piston, direction: :left}
+  end
+
   def kill
     pistons.clear
     @to_merge.clear

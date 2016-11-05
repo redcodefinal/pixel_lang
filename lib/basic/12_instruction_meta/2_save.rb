@@ -1,4 +1,4 @@
-class MetaSave < Meta
+class IMetaSave < InstructionMeta
   SCALES = [1, 2, 4, 8]
   ROTATIONS = [0, 90, 180, 270]
 

@@ -1,4 +1,4 @@
-class MetaGet < Meta
+class IMetaGet < InstructionMeta
   set_cc 0xC
   set_char ?*
 

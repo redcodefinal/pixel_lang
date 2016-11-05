@@ -52,7 +52,7 @@ class Call < Instruction
   end
 
   def self.run(piston, *args)
-    piston.jump(args.first, args.last)
+    piston.call(args.first, args.last)
   end
 
 

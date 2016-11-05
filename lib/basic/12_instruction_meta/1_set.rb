@@ -1,4 +1,4 @@
-class MetaSet < MetaGet
+class IMetaSet < IMetaGet
   set_cc 0xC
   set_char ?*
 
@@ -32,7 +32,7 @@ class MetaSet < MetaGet
     }
   end
 
-  def self.run(piston)
+  def self.run(piston, *args)
     coord_options = args[0]
     control_code_register = args[1]
     control_code_register_options = args[2]

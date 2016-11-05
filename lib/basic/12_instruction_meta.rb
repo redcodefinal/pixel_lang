@@ -1,7 +1,7 @@
 require_relative './../instruction'
 require_relative './../piston'
 
-class Meta < Instruction
+class InstructionMeta < Instruction
   class << self
     attr_reader :mc
 
@@ -40,4 +40,4 @@ class Meta < Instruction
   end
 end
 
-require_rel './meta_commands'
+require_rel './12_instruction_meta'
